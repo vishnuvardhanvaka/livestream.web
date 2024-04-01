@@ -1,11 +1,49 @@
 "use client"
 
 import { Search, AlignJustify, X } from 'lucide-react';
-import { useState } from 'react'
+import { format } from 'date-fns';
+import { useState,useEffect } from 'react'
 export default function Home() {
 
+  useEffect(() => {
+    getWeather()
+    // getHeadlines()
+    // getGnewsApiData()
+  }, [])
+  const currentDate = new Date();
+  const formattedDate = format(currentDate, 'EEEE, d MMMM');
+  const [weatherData, setWeatherData] = useState({
+    'cityName': 'Vijayawada',
+    'temperature': '--',
+    'Time': '',
+    'skyDesc': '',
+    'other_data': ''
+  })
   const [openMenu, setOpenMenu] = useState(false)
   const darkTheme = false
+
+  async function getWeather() {
+    console.log('calling weather')
+    let form = new FormData()
+    form.append('city', 'Vijayawada')
+    try {
+      const response = await fetch('https://newsweatherapi.vercel.app/getWeather/', {
+        method: 'POST',
+        body: form
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setWeatherData(data.weatherData)
+      console.log(data);
+      // Handle the fetched data as needed
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  };
 
   return (
     <div className="bg-[#f8feff]">
@@ -74,6 +112,39 @@ export default function Home() {
           />
         </div>
       </nav>
+
+      {/* head 1 */}
+      <div className="flex items-center justify-between lg:px-44 py-4 mx-2 lg:mx-0">
+        <div className="flex flex-col items-center">
+          <h1 className="font-bold text-lg lg:text-3xl my-1 text-gray-700">Your briefing</h1>
+          <h2 className="font-bold text-sm lg:text-2xl text-gray-700">{formattedDate}</h2>
+        </div>
+
+        <div className="p-1 lg:p-4 flex rounded-xl bg-white">
+          <div className="flex flex-col items-center justify-center">
+            {weatherData?.skyDesc === 'Clear' ? (
+              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+            ) : weatherData?.skyDesc === 'Partly Cloudy' ? (
+              <img src='https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png' alt="weather icon" />
+            ) : weatherData?.skyDesc === 'Clear with periodic clouds' ? (
+              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny_s_cloudy.png' alt="weather icon" />
+            ) : weatherData?.skyDesc === 'Sunny' ? (
+              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+            ) :  weatherData?.skyDesc === 'Mostly sunny' ? (
+              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+            ) : (
+              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+            )}
+
+            <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank"><img src='/left-arrow.svg' className="w-6 h-6 mt-2" alt="go" /></a>
+          </div>
+          <div className="lg:ml-2 text-sm flex flex-col items-center justify-between">
+            <h1 className="font-bold lg:text-2xl mt-2 text-gray-800">{weatherData.cityName}</h1>
+            <h1 className="font-bold lg:text-3xl">{weatherData?.temperature}</h1>
+            <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank" className="text-xs text-blue-600">More on Weather.com</a>
+          </div>
+        </div>
+      </div>
 
     </div>
   )
