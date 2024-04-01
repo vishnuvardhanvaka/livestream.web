@@ -15,6 +15,7 @@ export default function Home() {
           <span className="bg-[#faae3c] text-white px-2 py-1 mx-2 rounded-lg">Sphere</span>
         </div>
 
+
         <div className="hidden  mx-4 lg:flex gap-x-6 text-md">
           <h1 className="hover:bg-[#efeeee] hover:cursor-pointer py-1 px-2 rounded-md">Local</h1>
           <h1 className="hover:bg-[#efeeee] hover:cursor-pointer py-1 px-2 rounded-md">Business</h1>
