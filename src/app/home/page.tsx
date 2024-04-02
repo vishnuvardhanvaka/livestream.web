@@ -4,15 +4,20 @@ import Link from "next/link";
 import { Search, AlignJustify, X, ChevronRight, Bus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react'
-export default function Main() {
+import { usePathname } from 'next/navigation'
+export default function Home() {
+
+
 
   useEffect(() => {
     getWeather()
     // getHeadlines()
     // getGnewsApiData()
-    // getGNews('general')
+    getGNews('general')
     getMarketDetails()
   }, [])
+
+  const pathname = usePathname()
   const currentDate = new Date();
   const tabItems=['Home','Bussiness','Technology','Entertainment','Sports','Science','Health']
   const formattedDate = format(currentDate, 'EEEE, d MMMM');
@@ -67,14 +72,14 @@ export default function Main() {
           articles[i]['timeAgo'] = timeAgo;
 
         }
-        console.log(articles)
+        // console.log(articles)
         setHeadlines(articles)
       });
 
   }
 
   async function getWeather() {
-    console.log('calling weather')
+    // console.log('calling weather')
     let form = new FormData()
     form.append('city', 'Vijayawada')
     try {
@@ -97,7 +102,7 @@ export default function Main() {
   };
 
   async function getMarketDetails() {
-    console.log('calling market')
+    // console.log('calling market')
     let form = new FormData()
     const clist = ['TSLA', 'AMZN', 'AAPL', 'MSFT','GOOG']
     form.append('companies', JSON.stringify(clist))
@@ -112,7 +117,7 @@ export default function Main() {
       }
       const data = await response.json();
       setMarketDetails(data.market_trends)
-      console.log(data);
+    //   console.log(data);
       // Handle the fetched data as needed
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
@@ -129,18 +134,10 @@ export default function Main() {
 
         <div className="hidden  mx-4 lg:flex gap-x-6 text-md">
           {tabItems.map((item:any,index:number)=>{
-            console.log(window.location.pathname)
             return(
-              <a key={index} href={`/${item.toLowerCase()}`} onClick={(e)=>{localStorage.setItem('tab',item)}} className={` ${window.location.pathname==='/'+item? 'underline cursor-default':'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{item}</a>
+              <a key={index} href={`/${item.toLowerCase()}`} className={` ${pathname==='/'+item.toLowerCase()? 'underline cursor-default':'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{item}</a>
             )
           })}
-          {/* <h1 onCanPlay={(e)=>{setTab('local')}} className={`hover:bg-[#efeeee] ${tab==='local'? 'underline':''} underline-offset-8 hover:cursor-pointer py-1 px-2 rounded-md`}>Local</h1>
-          <h1 onClick={(e)=>{setTab('bussiness')}} className="hover:bg-[#efeeee] hover:cursor-pointer py-1 px-2 rounded-md">Business</h1>
-          <h1 className="hover:bg-[#efeeee] hover:cursor-pointer py-1 px-2 rounded-md">Technology</h1>
-          <h1 className="hover:bg-[#efeeee] hover:cursor-pointer py-1 px-2 rounded-md">Entertainment</h1>
-          <h1 className="hover:bg-[#efeeee] hover:cursor-pointer py-1 px-2 rounded-md">Sports</h1>
-          <h1 className="hover:bg-[#efeeee] hover:cursor-pointer py-1 px-2 rounded-md">Science</h1>
-          <h1 className="hover:bg-[#efeeee] hover:cursor-pointer py-1 px-2 rounded-md">Health</h1> */}
         </div>
 
         <div onClick={(e) => { setOpenMenu(!openMenu) }} className={`absolute right-5 top-1/2 transform  -translate-y-1/2 md:hidden hover:scale-105 cursor-pointer `}>
@@ -203,17 +200,17 @@ export default function Main() {
         <div className="p-1 lg:p-4 flex rounded-xl bg-white">
           <div className="flex flex-col items-center justify-center">
             {weatherData?.skyDesc === 'Clear' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Partly Cloudy' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Clear with periodic clouds' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny_s_cloudy.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny_s_cloudy.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Sunny' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Mostly sunny' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://png.pngtree.com/png-vector/20220607/ourmid/pngtree-mostly-sunny-sun-cloud-illustration-png-image_4812334.png' alt="weather icon" />
             ) : (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             )}
 
             <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank"><img src='/left-arrow.svg' className="w-6 h-6 mt-2" alt="go" /></a>
