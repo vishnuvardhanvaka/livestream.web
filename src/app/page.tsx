@@ -4,15 +4,18 @@ import Link from "next/link";
 import { Search, AlignJustify, X, ChevronRight, Bus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 export default function Main() {
 
   useEffect(() => {
     getWeather()
     // getHeadlines()
     // getGnewsApiData()
-    // getGNews('general')
+    getGNews('general')
     getMarketDetails()
   }, [])
+
+  const pathname = usePathname()
   const currentDate = new Date();
   const tabItems=['Home','Bussiness','Technology','Entertainment','Sports','Science','Health']
   const formattedDate = format(currentDate, 'EEEE, d MMMM');
@@ -129,9 +132,8 @@ export default function Main() {
 
         <div className="hidden  mx-4 lg:flex gap-x-6 text-md">
           {tabItems.map((item:any,index:number)=>{
-            console.log(window.location.pathname)
             return(
-              <a key={index} href={`/${item.toLowerCase()}`} onClick={(e)=>{localStorage.setItem('tab',item)}} className={` ${window.location.pathname==='/'+item? 'underline cursor-default':'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{item}</a>
+              <a key={index} href={`/${item.toLowerCase()}`} className={` ${pathname==='/'+item.toLowerCase()? 'underline cursor-default':'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{item}</a>
             )
           })}
           {/* <h1 onCanPlay={(e)=>{setTab('local')}} className={`hover:bg-[#efeeee] ${tab==='local'? 'underline':''} underline-offset-8 hover:cursor-pointer py-1 px-2 rounded-md`}>Local</h1>
