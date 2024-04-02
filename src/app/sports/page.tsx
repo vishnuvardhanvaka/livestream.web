@@ -285,7 +285,6 @@ export default function Sports() {
                 </div>
               </div>
 
-
               <div className="p-4 border-b-[1.5px] flex border-[#c1bdbd] pb-3 gap-x-4">
                 <div className="w-[100%] flex flex-col gap-y-2">
                   <img src={headlines[1]?.image} className="rounded-lg h-52" />
