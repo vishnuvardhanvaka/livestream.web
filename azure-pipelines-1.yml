@@ -1,0 +1,19 @@
+name: Push to GitHub
+
+on:
+  push:
+    branches:
+      - stag
+
+jobs:
+  push_to_github:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Push to GitHub
+      run: |
+        git remote add github https://github.com/vishnuvardhanvaka/livestream.web.git
+        git push github ${{ github.ref }}
