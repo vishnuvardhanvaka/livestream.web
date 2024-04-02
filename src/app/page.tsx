@@ -11,6 +11,7 @@ export default function Home() {
     // getHeadlines()
     // getGnewsApiData()
     getGNews('general')
+    getMarketDetails()
   }, [])
   const currentDate = new Date();
   const formattedDate = format(currentDate, 'EEEE, d MMMM');
@@ -22,6 +23,7 @@ export default function Home() {
     'skyDesc': '',
     'other_data': ''
   })
+  const [marketDetails, setMarketDetails] = useState<any>([])
   const [openMenu, setOpenMenu] = useState(false)
   const darkTheme = false
 
@@ -86,6 +88,29 @@ export default function Home() {
 
       const data = await response.json();
       setWeatherData(data.weatherData)
+      console.log(data);
+      // Handle the fetched data as needed
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  };
+
+  async function getMarketDetails() {
+    console.log('calling market')
+    let form = new FormData()
+    const clist = ['TSLA', 'AMZN', 'AAPL', 'MSFT','GOOG']
+    form.append('companies', JSON.stringify(clist))
+    try {
+      const response = await fetch('https://newsweatherapi.vercel.app/getMarketDetails/', {
+        method: 'POST',
+        body: form
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setMarketDetails(data.market_trends)
       console.log(data);
       // Handle the fetched data as needed
     } catch (error) {
@@ -245,7 +270,7 @@ export default function Home() {
             <div>
               <div className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
                 <div className="flex justify-between">
-                  <div  className="flex flex-col gap-y-2">
+                  <div className="flex flex-col gap-y-2">
                     <Link target="_blank" href={headlines[0]?.url} className="text-xl font-semibold">{headlines[0]?.title}.</Link>
                     <div className="">
                       {/* <img src={headline.source.name} className="my-2" /> */}
@@ -256,7 +281,7 @@ export default function Home() {
                   <img src={headlines[0]?.image} className="w-[25%] rounded-lg" />
                 </div>
               </div>
-              
+
 
               <div className="p-4 border-b-[1.5px] flex border-[#c1bdbd] pb-3 gap-x-4">
                 <div className="w-[100%] flex flex-col gap-y-2">
@@ -280,7 +305,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div  className="flex flex-col gap-y-2">
+                  <div className="flex flex-col gap-y-2">
                     {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
                     <Link target="_blank" href={headlines[3]?.url} className="text-lg font-semibold">{headlines[3]?.title}.</Link>
                     <div className="">
@@ -304,7 +329,7 @@ export default function Home() {
 
               <div className="p-4 border-b-[1.5px] flex flex-col justify-center border-[#c1bdbd] pb-3">
                 <div className="flex justify-between">
-                  <div  className="flex flex-col gap-y-2">
+                  <div className="flex flex-col gap-y-2">
                     <Link target="_blank" href={headlines[5]?.url} className="text-xl font-semibold">{headlines[5]?.title}.</Link>
                     <div className="">
                       {/* <img src={headline.source.name} className="my-2" /> */}
@@ -318,7 +343,7 @@ export default function Home() {
 
               <div className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
                 <div className="flex justify-between">
-                  <div  className="flex flex-col gap-y-2">
+                  <div className="flex flex-col gap-y-2">
                     <Link target="_blank" href={headlines[6]?.url} className="text-xl font-semibold">{headlines[6]?.title}.</Link>
                     <div className="">
                       {/* <img src={headline.source.name} className="my-2" /> */}
@@ -336,8 +361,51 @@ export default function Home() {
           )}
 
         </div>
+
+        {/* market */}
         <div className="rounded-xl bg-white h-96  p-8 w-[40%]">
-          <h1 className="border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 hover:cursor-pointer font-semibold">Market <ChevronRight className="mx-1 w-5 h-5 text-blue-500" /></h1>
+          <a href="https://www.google.com/finance" target="_blank" className="border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 hover:cursor-pointer font-semibold">Market <ChevronRight className="mx-1 w-5 h-5 text-blue-500" /></a>
+
+          <div>
+            <table className="border-collapse">
+              <thead>
+                <tr>
+                  <th className="px-4 py-3 text-left">Company Name</th>
+                  <th className="px-4 py-3 text-left">Closing Trade</th>
+                  <th className="px-4 py-3 text-left">Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                {marketDetails.map((details: any, index: number) => (
+                  <tr key={index} className="border-t">
+                    <td className="px-4 py-3">{details.company_name}</td>
+                    <td className="px-4 py-3">${details.last_trade_value}</td>
+                    <td className="px-4 py-3 gap-x-2">
+                      <div className={`flex  ${details.sign === "positive" ? "text-green-500" : "text-red-500"}`}>
+                        {details.sign === "positive" ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <circle cx="10" cy="10" r="10"></circle>
+                            <path d="M10.7071 7.70711L13.2929 10.2929C13.9229 10.9229 13.4767 12 12.5858 12L7.41421 12C6.52331 12 6.07714 10.9229 6.7071 10.2929L9.29289 7.70711C9.68342 7.31658 10.3166 7.31658 10.7071 7.70711Z" fill="white"></path>
+                          </svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <circle cx="10" cy="10" r="10"></circle>
+                            <path d="M10.7071 12.2929L13.2929 9.70711C13.9229 9.07714 13.4767 8 12.5858 8L7.41421 8C6.52331 8 6.07714 9.07714 6.7071 9.7071L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929Z" fill="white"></path>
+                          </svg>
+                        )}
+                        <span className="mx-1">{details.percentage}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+
+          </div>
+
+
+
         </div>
 
       </div>
