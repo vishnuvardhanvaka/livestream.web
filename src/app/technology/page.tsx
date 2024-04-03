@@ -20,7 +20,14 @@ export default function Technology() {
   const tabItems=['Home','Bussiness','Technology','Entertainment','Sports','Science','Health']
   const formattedDate = format(currentDate, 'EEEE, d MMMM');
   const [headlines, setHeadlines] = useState<any>([])
-  const [weatherData, setWeatherData] = useState<any>({})
+  const [weatherData, setWeatherData] = useState({
+    'cityName': 'Vijayawada',
+    'temperature': '--',
+    'imgUrl':"https://ssl.gstatic.com/onebox/weather/64/sunny.png",
+    'Time': '',
+    'skyDesc': '',
+    'other_data': ''
+  })
   const [marketDetails, setMarketDetails] = useState<any>([])
   const [openMenu, setOpenMenu] = useState(false)
   const darkTheme = false
@@ -191,7 +198,7 @@ export default function Technology() {
 
         <div className="p-1 lg:p-4 flex rounded-xl bg-white">
           <div className="flex flex-col items-center justify-center">
-          {weatherData?.skyDesc === 'Clear' && (
+          {weatherData && (
               <img className="w-20 h-20" src={weatherData.imgUrl} alt="weather icon" />
             )}
 
