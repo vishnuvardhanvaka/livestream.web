@@ -204,18 +204,20 @@ export default function Main() {
 
         <div className="p-1 lg:p-4 flex rounded-xl bg-white">
           <div className="flex flex-col items-center justify-center">
-            {weatherData?.skyDesc === 'Clear' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+          {weatherData?.skyDesc === 'Clear' ? (
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Partly Cloudy' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Clear with periodic clouds' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny_s_cloudy.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny_s_cloudy.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Sunny' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Mostly sunny' ? (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://png.pngtree.com/png-vector/20220607/ourmid/pngtree-mostly-sunny-sun-cloud-illustration-png-image_4812334.png' alt="weather icon" />
+            ) : weatherData?.skyDesc === "Haze" ? (
+              <img className="w-20 h-20" src='https://cdn-icons-png.flaticon.com/512/1779/1779807.png' alt="weather icon" />
             ) : (
-              <img src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
+              <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             )}
 
             <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank"><img src='/left-arrow.svg' className="w-6 h-6 mt-2" alt="go" /></a>

@@ -197,7 +197,7 @@ export default function Sports() {
 
         <div className="p-1 lg:p-4 flex rounded-xl bg-white">
           <div className="flex flex-col items-center justify-center">
-            {weatherData?.skyDesc === 'Clear' ? (
+          {weatherData?.skyDesc === 'Clear' ? (
               <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Partly Cloudy' ? (
               <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/partly_cloudy.png' alt="weather icon" />
@@ -207,6 +207,8 @@ export default function Sports() {
               <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             ) : weatherData?.skyDesc === 'Mostly sunny' ? (
               <img className="w-20 h-20" src='https://png.pngtree.com/png-vector/20220607/ourmid/pngtree-mostly-sunny-sun-cloud-illustration-png-image_4812334.png' alt="weather icon" />
+            ) : weatherData?.skyDesc === "Haze" ? (
+              <img className="w-20 h-20" src='https://cdn-icons-png.flaticon.com/512/1779/1779807.png' alt="weather icon" />
             ) : (
               <img className="w-20 h-20" src='https://ssl.gstatic.com/onebox/weather/64/sunny.png' alt="weather icon" />
             )}
