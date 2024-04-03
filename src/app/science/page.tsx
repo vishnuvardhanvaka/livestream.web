@@ -23,7 +23,7 @@ export default function Science() {
   const [weatherData, setWeatherData] = useState({
     'cityName': 'Vijayawada',
     'temperature': '--',
-    'imgUrl':"https://cdn-icons-png.flaticon.com/512/1779/1779807.png",
+    'imgUrl':"https://ssl.gstatic.com/onebox/weather/64/sunny.png",
     'Time': '',
     'skyDesc': '',
     'other_data': ''
