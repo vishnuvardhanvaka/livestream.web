@@ -6,7 +6,7 @@ import { format } from 'date-fns';
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 export default function Entertainment() {
-    
+
   useEffect(() => {
     getWeather()
     // getHeadlines()
@@ -17,27 +17,86 @@ export default function Entertainment() {
 
   const pathname = usePathname()
   const currentDate = new Date();
-  const tabItems=['Home','Bussiness','Technology','Entertainment','Sports','Science','Health']
+  const tabItems = ['Home', 'Bussiness', 'Technology', 'Entertainment', 'Sports', 'Science', 'Health']
   const formattedDate = format(currentDate, 'EEEE, d MMMM');
   const [headlines, setHeadlines] = useState<any>([])
   const [weatherData, setWeatherData] = useState({
     'cityName': 'Vijayawada',
+    'day': '',
+    'fTemp': '',
+    'humidity': '-',
+    'precipitation': '-',
+    'time': '-',
+    'wind': '-',
     'temperature': '--',
-    'imgUrl':"https://ssl.gstatic.com/onebox/weather/64/sunny.png",
+    'imgUrl': "https://ssl.gstatic.com/onebox/weather/64/sunny.png",
     'Time': '',
-    'skyDesc': '',
-    'other_data': ''
+    'skyDesc': ''
   })
   const [marketDetails, setMarketDetails] = useState<any>([])
   const [openMenu, setOpenMenu] = useState(false)
   const darkTheme = false
 
-  let gnewsapikey = '72cc3a0e40cde31dcd9e302002d60ad6';
+  let gnewsapikey_vishnu = '72cc3a0e40cde31dcd9e302002d60ad6';
+  let gnewsapikey_animation = '85b718e250165977b2be843f927d8071';
   let category = 'general';
 
 
   async function getGNews(category: string) {
-    let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&country=us&max=10&apikey=' + gnewsapikey;
+    let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&max=10&apikey=' + gnewsapikey_animation;
+    fetch(url)
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (data) {
+        let articles = data.articles;
+        for (let i = 0; i < articles.length; i++) {
+          // articles[i].title
+          const publishedAtDate = new Date(articles[i].publishedAt);
+
+          // Calculate the time difference in milliseconds
+          const timeDifferenceMs = Date.now() - publishedAtDate.getTime();
+
+          // Calculate time difference in seconds, minutes, hours, and days
+          const seconds = Math.floor(timeDifferenceMs / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(minutes / 60);
+          const days = Math.floor(hours / 24);
+
+          // Define the string to display
+          let timeAgo = '';
+          if (days > 0) {
+            timeAgo = `${days} day${days > 1 ? 's' : ''} ago`;
+          } else if (hours > 0) {
+            timeAgo = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+          } else if (minutes > 0) {
+            timeAgo = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+          } else {
+            timeAgo = `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+          }
+          articles[i]['timeAgo'] = timeAgo;
+
+        }
+        // console.log(articles)
+        setHeadlines(articles)
+      });
+  }
+
+  function getFormattedDate(date: any) {
+    return date.toISOString().split('.')[0] + 'Z'; // Convert date to ISO string and remove milliseconds
+  }
+
+  async function searchTopic(query: string) {
+    // let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&max=10&apikey=' + gnewsapikey;
+    // let url = 'https://gnews.io/api/v4/search?q=' + formattedQuery + '&lang=en&max=10&apikey=' + gnewsapikey;
+    const currentDate = new Date(); // Get the current date and time
+    const oneWeekAgoDate = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); // Subtract 7 days
+    const formattedFromDate = getFormattedDate(oneWeekAgoDate);
+
+    const words = query.split(' ');
+    const formattedQuery = words.join('+');
+    const url = `https://gnews.io/api/v4/search?q=${formattedQuery}&lang=en&max=10&from=${formattedFromDate}&apikey=${gnewsapikey_animation}`;
+    console.log(query, formattedQuery, url)
     fetch(url)
       .then(function (response) {
         return response.json();
@@ -77,6 +136,7 @@ export default function Entertainment() {
 
   }
 
+
   async function getWeather() {
     // console.log('calling weather')
     let form = new FormData()
@@ -103,7 +163,7 @@ export default function Entertainment() {
   async function getMarketDetails() {
     // console.log('calling market')
     let form = new FormData()
-    const clist = ['TSLA', 'AMZN', 'AAPL', 'MSFT','GOOG']
+    const clist = ['TSLA', 'AMZN', 'AAPL', 'MSFT', 'GOOG']
     form.append('companies', JSON.stringify(clist))
     try {
       const response = await fetch('https://newsweatherapi.vercel.app/getMarketDetails/', {
@@ -116,7 +176,7 @@ export default function Entertainment() {
       }
       const data = await response.json();
       setMarketDetails(data.market_trends)
-    //   console.log(data);
+      //   console.log(data);
       // Handle the fetched data as needed
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
@@ -125,23 +185,42 @@ export default function Entertainment() {
 
   return (
     <div className="bg-[#f8feff]">
-      <nav className="bg-white sticky top-0 px-4 border-b-[1.5px] border-[#c1bdbd] py-3 flex items-center justify-between">
-        <div className="inline-flex items-center m-4 text-2xl font-bold">
-          <h1 className="text-3xl font-extrabold">Info</h1>
-          <span className="bg-[#faae3c] text-white px-2 py-1 mx-2 rounded-lg">Sphere</span>
+      <nav className="bg-white sticky top-0 px-4 border-b-[1.5px] border-[#c1bdbd] py-2">
+        <div className="flex">
+          <div className="inline-flex items-center mx-4 text-2xl font-bold">
+            <h1 className="text-3xl font-extrabold">Info</h1>
+            <span className="bg-[#faae3c] text-white px-2 py-1 mx-2 rounded-lg">Sphere</span>
+          </div>
+
+          <div className="hidden  w-[75%] lg:flex items-center justify-center ">
+            <div className="w-[60%] lg:flex items-center mx-auto ">
+              <Search
+                className="w-5 h-5 absolute mx-4 text-[#919090]"
+              />
+              <input
+                placeholder="Search for topics, location & keywords"
+                className="bg-[#ebebeb] text-base pl-12 pr-4 py-3 outline-none focus:bg-white focus:shadow-md border-none focus:border-none rounded-lg w-full"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    searchTopic((e.target as HTMLInputElement).value)
+                  }
+                }}
+              />
+
+            </div>
+          </div>
         </div>
 
-        <div className="hidden  mx-4 lg:flex gap-x-6 text-md">
-          {tabItems.map((item:any,index:number)=>{
-            return(
-              <a key={index} href={`/${item.toLowerCase()}`} className={` ${pathname==='/'+item.toLowerCase()? 'underline cursor-default':'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{item}</a>
+        <div className="hidden lg:flex gap-x-6 text-md items-center mt-4 justify-center">
+          {tabItems.map((item: any, index: number) => {
+            return (
+              <a key={index} href={`/${item.toLowerCase()}`} className={` ${pathname === '/' + item.toLowerCase() ? 'underline cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{item}</a>
             )
           })}
         </div>
 
         <div onClick={(e) => { setOpenMenu(!openMenu) }} className={`absolute right-5 top-1/2 transform  -translate-y-1/2 md:hidden hover:scale-105 cursor-pointer `}>
           {openMenu ? <X size={30} /> : <AlignJustify className="" size={30} />}
-
         </div>
 
         <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? "fixed left-0 top-0 w-[60%] border-r h-full border-r-gray-900  ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-0 w-[60%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
@@ -177,7 +256,7 @@ export default function Entertainment() {
               </div> */}
         </div>
 
-        <div className="hidden lg:flex items-center mx-4">
+        {/* <div className="hidden lg:flex items-center mx-4">
           <Search
             className="w-5 h-5 absolute mx-2 text-[#919090]"
           />
@@ -185,9 +264,9 @@ export default function Entertainment() {
             placeholder="Search for topics, location & keywords"
             className="bg-[#f7f6f6] text-base  border-2 border-[#8f8c8c] pl-8 pr-4 py-2 rounded-xl w-96"
           />
-        </div>
+        </div> */}
       </nav>
-      
+
 
       {/* head 1 */}
       <div className="flex items-center justify-between lg:px-44 py-4 mx-2 lg:mx-0">
@@ -198,15 +277,35 @@ export default function Entertainment() {
 
         <div className="p-1 lg:p-4 flex rounded-xl bg-white">
           <div className="flex flex-col items-center justify-center">
-          {weatherData && (
-              <img className="w-20 h-20" src={weatherData.imgUrl} alt="weather icon" />
+            {weatherData && (
+              <img
+                className="w-20 h-20"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                title={weatherData.skyDesc}
+                src={weatherData.imgUrl}
+                alt="weather icon"
+              />
             )}
 
             <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank"><img src='/left-arrow.svg' className="w-6 h-6 mt-2" alt="go" /></a>
           </div>
-          <div className="lg:ml-2 text-sm flex flex-col items-center justify-between">
-            <h1 className="font-bold lg:text-2xl mt-2 text-gray-800">{weatherData.cityName}</h1>
-            <h1 className="font-bold lg:text-3xl">{weatherData?.temperature}</h1>
+          <div className="lg:ml-2 text-sm flex flex-col items-center justify-between hover:cursor-default">
+            <h1 className="font-bold lg:text-2xl mt-2 text-gray-800"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title={`${weatherData.day}`}
+            >
+              {weatherData.cityName}
+            </h1>
+            <h1
+              className="font-bold lg:text-3xl hover:cursor-default"
+              data-toggle="tooltip"
+              data-placement="bottom"
+              title={`Humidity: ${weatherData.humidity}\nWind: ${weatherData.wind}\nPrecipitation: ${weatherData.precipitation}`}
+            >
+              {weatherData?.temperature}
+            </h1>
             <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank" className="text-xs text-blue-600">More on Weather.com</a>
           </div>
         </div>
@@ -398,7 +497,7 @@ export default function Entertainment() {
           </div>
         </div>
       </div>
-      
+
 
     </div>
   )
