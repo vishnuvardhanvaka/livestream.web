@@ -5,9 +5,10 @@ import { Search, AlignJustify, X, ChevronRight, Bus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-export default function Home() {
+export default function Main() {
 
   useEffect(() => {
+    setLoadingMarket(true)
     getWeather()
     // getHeadlines()
     // getGnewsApiData()
@@ -36,13 +37,17 @@ export default function Home() {
   const [marketDetails, setMarketDetails] = useState<any>([])
   const [openMenu, setOpenMenu] = useState(false)
   const darkTheme = false
+  const [loadingNews, setLoadingNews] = useState(false)
+  const [loadingMarket, setLoadingMarket] = useState(false)
 
-  let gnewsapikey = '72cc3a0e40cde31dcd9e302002d60ad6';
+  let gnewsapikey_vishnu = '72cc3a0e40cde31dcd9e302002d60ad6';
+  let gnewsapikey_animation = '85b718e250165977b2be843f927d8071';
   let category = 'general';
 
 
   async function getGNews(category: string) {
-    let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&country=us&max=10&apikey=' + gnewsapikey;
+    setLoadingNews(true)
+    let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&max=10&apikey=' + gnewsapikey_animation;
     fetch(url)
       .then(function (response) {
         return response.json();
@@ -78,14 +83,26 @@ export default function Home() {
         }
         // console.log(articles)
         setHeadlines(articles)
+        setLoadingNews(false)
       });
+  }
 
+  function getFormattedDate(date: any) {
+    return date.toISOString().split('.')[0] + 'Z'; // Convert date to ISO string and remove milliseconds
   }
 
   async function searchTopic(query: string) {
+    setLoadingNews(true)
     // let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&max=10&apikey=' + gnewsapikey;
-    let url = 'https://gnews.io/api/v4/search?q='+query+'&lang=en&max=10&apikey=' + gnewsapikey;
-    console.log(query,url)
+    // let url = 'https://gnews.io/api/v4/search?q=' + formattedQuery + '&lang=en&max=10&apikey=' + gnewsapikey;
+    const currentDate = new Date(); // Get the current date and time
+    const oneWeekAgoDate = new Date(currentDate.getTime() - 30 * 24 * 60 * 60 * 1000); // Subtract 7 days
+    const formattedFromDate = getFormattedDate(oneWeekAgoDate);
+
+    const words = query.split(' ');
+    const formattedQuery = words.join('+');
+    const url = `https://gnews.io/api/v4/search?q=${formattedQuery}&lang=en&max=10&from=${formattedFromDate}&apikey=${gnewsapikey_animation}`;
+    console.log(query, formattedQuery, url)
     fetch(url)
       .then(function (response) {
         return response.json();
@@ -121,6 +138,7 @@ export default function Home() {
         }
         // console.log(articles)
         setHeadlines(articles)
+        setLoadingNews(false)
       });
 
   }
@@ -151,6 +169,7 @@ export default function Home() {
 
   async function getMarketDetails() {
     // console.log('calling market')
+    setLoadingMarket(true)
     let form = new FormData()
     const clist = ['TSLA', 'AMZN', 'AAPL', 'MSFT', 'GOOG']
     form.append('companies', JSON.stringify(clist))
@@ -165,16 +184,18 @@ export default function Home() {
       }
       const data = await response.json();
       setMarketDetails(data.market_trends)
+      setLoadingMarket(false)
       //   console.log(data);
       // Handle the fetched data as needed
     } catch (error) {
+      setLoadingMarket(false)
       console.error('There was a problem with the fetch operation:', error);
     }
   };
 
   return (
     <div className="bg-[#f8feff]">
-      <nav className="bg-white sticky top-0 px-4 border-b-[1.5px] border-[#c1bdbd] py-2">
+      <nav className="bg-white sticky top-0 px-4 border-b-[0.1px] border-b-slate-300  pt-2">
         <div className="flex">
           <div className="inline-flex items-center mx-4 text-2xl font-bold">
             <h1 className="text-3xl font-extrabold">Info</h1>
@@ -200,7 +221,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="hidden lg:flex gap-x-6 text-md items-center mt-4 justify-center">
+        <div className="hidden lg:flex gap-x-6 font-semibold text-md items-center mt-4 justify-center">
           {tabItems.map((item: any, index: number) => {
             return (
               <a key={index} href={`/${item.toLowerCase()}`} className={` ${pathname === '/' + item.toLowerCase() ? 'underline cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{item}</a>
@@ -348,107 +369,185 @@ export default function Home() {
             // );
           }
           {/* )} */}
-          {headlines.length > 0 && (
-            <div>
-              <div className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
-                <div className="flex justify-between">
-                  <div className="flex flex-col gap-y-2">
-                    <Link target="_blank" href={headlines[0]?.url} className="text-xl font-semibold">{headlines[0]?.title}.</Link>
-                    <div className="">
-                      {/* <img src={headline.source.name} className="my-2" /> */}
-                      <h1>-{headlines[0]?.source.name}</h1>
-                      <h1 className="text-xs text-gray-600">{headlines[0]?.timeAgo}</h1>
+          {loadingNews ? (
+            <div className="">
+              <div className="rounded-md w-full mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
+                <div className="animate-pulse flex space-x-4">
+                  {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
+                  <div className="flex-1 space-y-6 py-1">
+                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="h-2 bg-slate-700 rounded w-[95%]"></div>
+                    <div className="space-y-3">
+                      {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
+                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
-                  <img src={headlines[0]?.image} className="w-[25%] rounded-lg" />
+                  <div className="rounded-lg w-[25%] bg-slate-700 "></div>
                 </div>
               </div>
-
 
               <div className="p-4 border-b-[1.5px] flex border-[#c1bdbd] pb-3 gap-x-4">
-                <div className="w-[100%] flex flex-col gap-y-2">
-                  <img src={headlines[1]?.image} className="rounded-lg h-52" />
-                  <Link target="_blank" href={headlines[1]?.url} className="text-lg font-bold">{headlines[1]?.title}.</Link>
-                  <div className="flex flex-col gap-y-1">
-                    {/* <img src={headline.source.name} className="my-2" /> */}
-                    <h1>-{headlines[1]?.source.name}</h1>
-                    <h1 className="text-xs text-gray-600">{headlines[1]?.timeAgo}</h1>
+
+                <div className="animate-pulse w-[50%] flex flex-col">
+                  <div className="rounded-lg bg-slate-700 h-52 "></div>
+                  <div className="flex-1 space-y-6 pt-4">
+                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="space-y-3">
+                      <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div>
+                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex flex-col justify-center gap-y-4">
-                  <div className="flex flex-col gap-y-2">
-                    {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
-                    <Link target="_blank" href={headlines[2]?.url} className="text-lg font-semibold">{headlines[2]?.title}.</Link>
-                    <div className="">
-                      {/* <img src={headline.source.name} className="my-2" /> */}
-                      <h1 className="text-sm">-{headlines[2]?.source.name}</h1>
-                      <h1 className="text-xs text-gray-600">{headlines[2]?.timeAgo}</h1>
+
+                <div className="animate-pulse w-[50%] flex flex-col">
+                  <div className="flex-1 space-y-6 pt-4">
+                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="space-y-3">
+                      <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div>
+                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
-
-                  <div className="flex flex-col gap-y-2">
-                    {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
-                    <Link target="_blank" href={headlines[3]?.url} className="text-lg font-semibold">{headlines[3]?.title}.</Link>
-                    <div className="">
-                      {/* <img src={headline.source.name} className="my-2" /> */}
-                      <h1 className="text-sm">-{headlines[3]?.source.name}</h1>
-                      <h1 className="text-xs text-gray-600">{headlines[3]?.timeAgo}</h1>
+                  <div className="flex-1 space-y-6 pt-4">
+                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="space-y-3">
+                      <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div>
+                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
-
-                  <div className="flex flex-col gap-y-2">
-                    {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
-                    <Link target="_blank" href={headlines[4]?.url} className="text-lg font-semibold">{headlines[4]?.title}.</Link>
-                    <div className="">
-                      {/* <img src={headline.source.name} className="my-2" /> */}
-                      <h1 className="text-sm">-{headlines[4]?.source.name}</h1>
-                      <h1 className="text-xs text-gray-600">{headlines[4]?.timeAgo}</h1>
+                  <div className="flex-1 space-y-6 pt-4">
+                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="space-y-3">
+                      {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
+                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 border-b-[1.5px] flex flex-col justify-center border-[#c1bdbd] pb-3">
-                <div className="flex justify-between">
-                  <div className="flex flex-col gap-y-2">
-                    <Link target="_blank" href={headlines[5]?.url} className="text-xl font-semibold">{headlines[5]?.title}.</Link>
-                    <div className="">
-                      {/* <img src={headline.source.name} className="my-2" /> */}
-                      <h1>-{headlines[5]?.source.name}</h1>
-                      <h1 className="text-xs text-gray-600">{headlines[5]?.timeAgo}</h1>
+              <div className="rounded-md w-full mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
+                <div className="animate-pulse flex space-x-4">
+                  {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
+                  <div className="flex-1 space-y-6 py-1">
+                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="h-2 bg-slate-700 rounded w-[95%]"></div>
+                    <div className="space-y-3">
+                      {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
+                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
-                  <img src={headlines[5]?.image} className="w-[25%] rounded-lg" />
-                </div>
-              </div>
-
-              <div className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
-                <div className="flex justify-between">
-                  <div className="flex flex-col gap-y-2">
-                    <Link target="_blank" href={headlines[6]?.url} className="text-xl font-semibold">{headlines[6]?.title}.</Link>
-                    <div className="">
-                      {/* <img src={headline.source.name} className="my-2" /> */}
-                      <h1>-{headlines[6]?.source.name}</h1>
-                      <h1 className="text-xs text-gray-600">{headlines[6]?.timeAgo}</h1>
-                    </div>
-                  </div>
-                  <img src={headlines[6]?.image} className="w-[25%] rounded-lg" />
+                  <div className="rounded-lg w-[25%] bg-slate-700 "></div>
                 </div>
               </div>
 
 
 
             </div>
+
+          ) : (
+            <div>
+              {
+                headlines.length > 0 && (
+                  <div>
+                    <div className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
+                      <div className="flex justify-between">
+                        <div className="flex flex-col gap-y-2">
+                          <Link target="_blank" href={headlines[0]?.url} className="text-xl font-semibold">{headlines[0]?.title}.</Link>
+                          <div className="">
+                            {/* <img src={headline.source.name} className="my-2" /> */}
+                            <h1>-{headlines[0]?.source.name}</h1>
+                            <h1 className="text-xs text-gray-600">{headlines[0]?.timeAgo}</h1>
+                          </div>
+                        </div>
+                        <img src={headlines[0]?.image} className="w-[25%] rounded-lg" />
+                      </div>
+                    </div>
+
+
+                    <div className="p-4 border-b-[1.5px] flex border-[#c1bdbd] pb-3 gap-x-4">
+                      <div className="w-[100%] flex flex-col gap-y-2">
+                        <img src={headlines[1]?.image} className="rounded-lg h-52" />
+                        <Link target="_blank" href={headlines[1]?.url} className="text-lg font-bold">{headlines[1]?.title}.</Link>
+                        <div className="flex flex-col gap-y-1">
+                          {/* <img src={headline.source.name} className="my-2" /> */}
+                          <h1>-{headlines[1]?.source.name}</h1>
+                          <h1 className="text-xs text-gray-600">{headlines[1]?.timeAgo}</h1>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col justify-center gap-y-4">
+                        <div className="flex flex-col gap-y-2">
+                          {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
+                          <Link target="_blank" href={headlines[2]?.url} className="text-lg font-semibold">{headlines[2]?.title}.</Link>
+                          <div className="">
+                            {/* <img src={headline.source.name} className="my-2" /> */}
+                            <h1 className="text-sm">-{headlines[2]?.source.name}</h1>
+                            <h1 className="text-xs text-gray-600">{headlines[2]?.timeAgo}</h1>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-y-2">
+                          {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
+                          <Link target="_blank" href={headlines[3]?.url} className="text-lg font-semibold">{headlines[3]?.title}.</Link>
+                          <div className="">
+                            {/* <img src={headline.source.name} className="my-2" /> */}
+                            <h1 className="text-sm">-{headlines[3]?.source.name}</h1>
+                            <h1 className="text-xs text-gray-600">{headlines[3]?.timeAgo}</h1>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col gap-y-2">
+                          {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
+                          <Link target="_blank" href={headlines[4]?.url} className="text-lg font-semibold">{headlines[4]?.title}.</Link>
+                          <div className="">
+                            {/* <img src={headline.source.name} className="my-2" /> */}
+                            <h1 className="text-sm">-{headlines[4]?.source.name}</h1>
+                            <h1 className="text-xs text-gray-600">{headlines[4]?.timeAgo}</h1>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 border-b-[1.5px] flex flex-col justify-center border-[#c1bdbd] pb-3">
+                      <div className="flex justify-between">
+                        <div className="flex flex-col gap-y-2">
+                          <Link target="_blank" href={headlines[5]?.url} className="text-xl font-semibold">{headlines[5]?.title}.</Link>
+                          <div className="">
+                            {/* <img src={headline.source.name} className="my-2" /> */}
+                            <h1>-{headlines[5]?.source.name}</h1>
+                            <h1 className="text-xs text-gray-600">{headlines[5]?.timeAgo}</h1>
+                          </div>
+                        </div>
+                        <img src={headlines[5]?.image} className="w-[25%] rounded-lg" />
+                      </div>
+                    </div>
+
+                    <div className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
+                      <div className="flex justify-between">
+                        <div className="flex flex-col gap-y-2">
+                          <Link target="_blank" href={headlines[6]?.url} className="text-xl font-semibold">{headlines[6]?.title}.</Link>
+                          <div className="">
+                            {/* <img src={headline.source.name} className="my-2" /> */}
+                            <h1>-{headlines[6]?.source.name}</h1>
+                            <h1 className="text-xs text-gray-600">{headlines[6]?.timeAgo}</h1>
+                          </div>
+                        </div>
+                        <img src={headlines[6]?.image} className="w-[25%] rounded-lg" />
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+            </div>
           )}
 
         </div>
 
         {/* market */}
-        <div className="rounded-xl bg-white h-96  p-8 w-[40%]">
+        <div className="rounded-xl  bg-white h-96  p-8 w-[40%]">
           <a href="https://www.google.com/finance" target="_blank" className="border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 hover:cursor-pointer font-semibold">Market <ChevronRight className="mx-1 w-5 h-5 text-blue-500" /></a>
 
-          <div>
+          <div className="w-full">
             <table className="border-collapse">
               <thead>
                 <tr>
@@ -457,38 +556,63 @@ export default function Home() {
                   <th className="px-4 py-3 text-left">Change Rate</th>
                 </tr>
               </thead>
-              <tbody>
-                {marketDetails.map((details: any, index: number) => (
-                  <tr key={index} className="border-t">
-                    <td className="px-4 py-3">{details.company_name}</td>
-                    <td className="px-4 py-3">${details.last_trade_value}</td>
-                    <td className="px-4 py-3 gap-x-2">
-                      <div className={`flex  ${details.sign === "positive" ? "text-green-500" : "text-red-500"}`}>
-                        {details.sign === "positive" ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <circle cx="10" cy="10" r="10"></circle>
-                            <path d="M10.7071 7.70711L13.2929 10.2929C13.9229 10.9229 13.4767 12 12.5858 12L7.41421 12C6.52331 12 6.07714 10.9229 6.7071 10.2929L9.29289 7.70711C9.68342 7.31658 10.3166 7.31658 10.7071 7.70711Z" fill="white"></path>
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-                            <circle cx="10" cy="10" r="10"></circle>
-                            <path d="M10.7071 12.2929L13.2929 9.70711C13.9229 9.07714 13.4767 8 12.5858 8L7.41421 8C6.52331 8 6.07714 9.07714 6.7071 9.7071L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929Z" fill="white"></path>
-                          </svg>
-                        )}
-                        <span className="mx-1">{details.percentage}</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+
+              {loadingMarket ? (
+                  <tbody>
+                    <tr className="border-t">
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    </tr>
+                    <tr className="border-t">
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    </tr>
+                    <tr className="border-t">
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    </tr>
+                    
+                  </tbody>
+
+              ) : (
+
+                <tbody>
+                  {marketDetails.map((details: any, index: number) => (
+                    <tr key={index} className="border-t">
+                      <td className="px-4 py-3">{details.company_name}</td>
+                      <td className="px-4 py-3">${details.last_trade_value}</td>
+                      <td className="px-4 py-3 gap-x-2">
+                        <div className={`flex  ${details.sign === "positive" ? "text-green-500" : "text-red-500"}`}>
+                          {details.sign === "positive" ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                              <circle cx="10" cy="10" r="10"></circle>
+                              <path d="M10.7071 7.70711L13.2929 10.2929C13.9229 10.9229 13.4767 12 12.5858 12L7.41421 12C6.52331 12 6.07714 10.9229 6.7071 10.2929L9.29289 7.70711C9.68342 7.31658 10.3166 7.31658 10.7071 7.70711Z" fill="white"></path>
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                              <circle cx="10" cy="10" r="10"></circle>
+                              <path d="M10.7071 12.2929L13.2929 9.70711C13.9229 9.07714 13.4767 8 12.5858 8L7.41421 8C6.52331 8 6.07714 9.07714 6.7071 9.7071L9.29289 12.2929C9.68342 12.6834 10.3166 12.6834 10.7071 12.2929Z" fill="white"></path>
+                            </svg>
+                          )}
+                          <span className="mx-1">{details.percentage}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+
             </table>
-
           </div>
+
         </div>
-      </div>
+      </div >
 
 
-    </div>
+    </div >
   )
 }
 
