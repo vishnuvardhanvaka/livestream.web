@@ -50,14 +50,14 @@ export default function Entertainment() {
 
   async function getGNews(category: string) {
     setLoadingNews(true)
-    let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&max=10&apikey=' + gnewsapikey_animation;
+    let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&max=10&apikey=' + gnewsapikey_vishnu;
     fetch(url)
       .then(function (response) {
         return response.json();
       })
       .then(function (data) {
         let articles = data.articles;
-        for (let i = 0; i < articles.length; i++) {
+        for (let i = 0; i < articles?.length; i++) {
           // articles[i].title
           const publishedAtDate = new Date(articles[i].publishedAt);
 
@@ -198,7 +198,7 @@ export default function Entertainment() {
 
   return (
     <div className="bg-[#f8feff]">
-      <nav className="bg-white sticky top-0 z-10 px-4 border-b-[0.1px] border-b-slate-300 p-2  lg:pt-2 lg:pb-0">
+      <nav className="bg-white sticky top-0 z-20 px-4 border-b-[0.1px] border-b-slate-300 p-2  lg:pt-2 lg:pb-0">
         <div className="flex">
           <div className="inline-flex items-center gap-x-2 text-2xl font-bold">
             <h1 className="text-3xl font-extrabold">Info</h1>
@@ -238,7 +238,7 @@ export default function Entertainment() {
       </nav>
 
       {/* {sidebar} */}
-        <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? "fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
+        <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? "z-10 fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
           <ul className="px-6 flex flex-col">
             {Object.entries(tabItems).map(([key, Component], index) => (
               <div key={index} className="flex flex-col">
@@ -307,7 +307,7 @@ export default function Entertainment() {
         <div className="lg:my-2 lg:rounded-xl p-2 bg-white lg:p-8 lg:w-[60%]">
           <a href="" className="lg:border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 font-semibold">Top Stories <ChevronRight className="mx-1 w-5 h-5 text-blue-500" /></a>
           {loadingNews ? (
-            <div className="z-0 flex flex-col gap-y-4">
+            <div className="z-1 flex flex-col gap-y-4">
 
               <div className="w-full mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
                 <div className="animate-pulse flex space-x-4">
@@ -410,7 +410,7 @@ export default function Entertainment() {
           ) : (
             <div>
               {
-                headlines.length > 0 && (
+                headlines?.length > 0 && (
                   <div>
                     <div className="lg:p-4 border-b-[1.5px] pb-3">
                       <div className="lg:flex justify-between">
