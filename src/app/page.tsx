@@ -5,6 +5,8 @@ import { Search, AlignJustify, X, ChevronRight, Bus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
+import { Globe,Building2,Cpu,Film,Bike,FlaskConical,HeartPulse } from 'lucide-react';
+
 export default function Main() {
 
   useEffect(() => {
@@ -18,7 +20,8 @@ export default function Main() {
 
   const pathname = usePathname()
   const currentDate = new Date();
-  const tabItems = ['Home', 'Bussiness', 'Technology', 'Entertainment', 'Sports', 'Science', 'Health']
+  const tabItems = { 'Home': Globe, 'Bussiness': Building2, 'Technology': Cpu, 'Entertainment': Film, 'Sports': Bike, 'Science': FlaskConical, 'Health': HeartPulse }
+  const tabIcons = [HeartPulse, HeartPulse, HeartPulse, HeartPulse, HeartPulse, HeartPulse, HeartPulse]
   const formattedDate = format(currentDate, 'EEEE, d MMMM');
   const [headlines, setHeadlines] = useState<any>([])
   const [weatherData, setWeatherData] = useState({
@@ -195,11 +198,11 @@ export default function Main() {
 
   return (
     <div className="bg-[#f8feff]">
-      <nav className="bg-white sticky top-0 px-4 border-b-[0.1px] border-b-slate-300  pt-2">
+      <nav className="bg-white sticky top-0 z-10 px-4 border-b-[0.1px] border-b-slate-300 p-2  lg:pt-2 lg:pb-0">
         <div className="flex">
-          <div className="inline-flex items-center mx-4 text-2xl font-bold">
+          <div className="inline-flex items-center gap-x-2 text-2xl font-bold">
             <h1 className="text-3xl font-extrabold">Info</h1>
-            <span className="bg-[#faae3c] text-white px-2 py-1 mx-2 rounded-lg">Sphere</span>
+            <span className="bg-[#faae3c] text-white px-2 py-1 rounded-lg">Sphere</span>
           </div>
 
           <div className="hidden  w-[75%] lg:flex items-center justify-center ">
@@ -222,156 +225,91 @@ export default function Main() {
         </div>
 
         <div className="hidden lg:flex gap-x-6 font-semibold text-md items-center mt-4 justify-center">
-          {tabItems.map((item: any, index: number) => {
-            return (
-              <a key={index} href={`/${item.toLowerCase()}`} className={` ${pathname === '/' + item.toLowerCase() ? 'underline cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{item}</a>
+        {Object.entries(tabItems).map(([key, Component], index) => (
+              <a key={index} href={`/${key.toLowerCase()}`} className={` ${pathname === '/' + key.toLowerCase() ? 'underline cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{key}</a>
             )
-          })}
+          )}
         </div>
-
         <div onClick={(e) => { setOpenMenu(!openMenu) }} className={`absolute right-5 top-1/2 transform  -translate-y-1/2 md:hidden hover:scale-105 cursor-pointer `}>
           {openMenu ? <X size={30} /> : <AlignJustify className="" size={30} />}
         </div>
 
-        <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? "fixed left-0 top-0 w-[60%] border-r h-full border-r-gray-900  ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-0 w-[60%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
-          {/* <h1 className={`w-full m-4 text-3xl ${darkTheme ? "text-white" : "text-black"} font-bold `}><span className="text-red-500">Live</span> News.</h1> */}
-          <div className="inline-flex items-center m-4 text-2xl font-bold">
-            <h1 className="text-3xl font-extrabold">Info</h1>
-            <span className="bg-[#faae3c] text-white px-2 py-1 mx-2 rounded-lg">Sphere</span>
-          </div>
-          <ul className="px-4  ">
-            <a onClick={(e) => { }} href="/home" className="w-full"><li className={` p-4 border-b ${darkTheme ? "text-white" : "text-black "} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600'} cursor-pointer hover:bg-gray-200 `}>Local</li></a>
-            <a onClick={(e) => { }} href="/live"><li className={` p-4 border-b ${darkTheme ? "text-white" : "text-black "} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600'} cursor-pointer hover:bg-gray-200 `}>Business</li></a>
-            <a onClick={(e) => { }} href="/news"><li className={` p-4 border-b ${darkTheme ? "text-white" : "text-black "} ${false ? ' transition-colors text-blue-600 duration-300 transform border-b-2 border-blue-500' : 'border-gray-600'} cursor-pointer hover:bg-gray-200 `}>Technology</li></a>
-            <a onClick={(e) => { }} href="/about"><li className={` p-4 border-b ${darkTheme ? "text-white" : "text-black"} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600 '} cursor-pointer hover:bg-gray-200 `}>Entertainment</li></a>
-            <a onClick={(e) => { }} href="/about"><li className={` p-4 border-b ${darkTheme ? "text-white" : "text-black"} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600 '} cursor-pointer hover:bg-gray-200 `}>Sports</li></a>
-            <a onClick={(e) => { }} href="/about"><li className={` p-4 border-b ${darkTheme ? "text-white" : "text-black"} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600 '} cursor-pointer hover:bg-gray-200 `}>Science</li></a>
-            <a onClick={(e) => { }} href="/about"><li className={` p-4 border-b ${darkTheme ? "text-white" : "text-black"} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600 '} cursor-pointer hover:bg-gray-200 `}>Health</li></a>
-          </ul>
-          {/* <div onClick={(e) => { }} className="px-4 w-full flex items-center">
-                {
-                  darkTheme ? (
-                    <div className="flex w-full items-center p-4 border-b">
-                      <span className="w-24 text-white ">Light Mode</span>
-                      < SunMoon className="text-white w-7 h-7 lg:cursor-pointer" />
-                    </div>
 
-                  ) : (
-                    <div className="flex w-full items-center p-4 border-b border-gray-600 ">
-                      <span className="w-24 text-black">Dark Mode</span>
-                      <Moon className="text-black w-6 h-6 lg:cursor-pointer" />
-                    </div>
-                  )
-                }
-              </div> */}
-        </div>
-
-        {/* <div className="hidden lg:flex items-center mx-4">
-          <Search
-            className="w-5 h-5 absolute mx-2 text-[#919090]"
-          />
-          <input
-            placeholder="Search for topics, location & keywords"
-            className="bg-[#f7f6f6] text-base  border-2 border-[#8f8c8c] pl-8 pr-4 py-2 rounded-xl w-96"
-          />
-        </div> */}
       </nav>
+
+      {/* {sidebar} */}
+        <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? "fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
+          <ul className="px-6 flex flex-col">
+            {Object.entries(tabItems).map(([key, Component], index) => (
+              <div key={index} className="flex flex-col">
+                <a
+                  href={`/${key.toLowerCase()}`}
+                  className={` ${pathname === '/' + key.toLowerCase() ? 'border-b-blue-500 text-blue-500 cursor-default' : ''} flex gap-x-5 py-5 ${darkTheme ? "text-white" : "text-black "} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600'}`}
+                >
+                <Component />
+                <h1 className="font-semibold">{key}</h1>
+                </a>
+              </div>
+            ))}
+          </ul>
+      </div>
 
 
       {/* head 1 */}
-      <div className="flex items-center justify-between lg:px-44 py-4 mx-2 lg:mx-0">
+      <div className="flex items-center justify-between lg:px-44 py-2 lg:py-4 mx-2 lg:mx-0">
         <div className="flex flex-col items-center">
           <h1 className="font-bold text-lg lg:text-3xl my-1 text-gray-700">Your briefing</h1>
           <h2 className="font-bold text-sm lg:text-2xl text-gray-700">{formattedDate}</h2>
         </div>
 
-        <div className="p-1 lg:p-4 flex rounded-xl bg-white">
+        <div className="p-1 lg:p-4 flex flex-col rounded-xl bg-white">
           <div className="flex flex-col items-center justify-center">
             {weatherData && (
-              <img
-                className="w-20 h-20"
-                data-toggle="tooltip"
-                data-placement="bottom"
-                title={weatherData.skyDesc}
-                src={weatherData.imgUrl}
-                alt="weather icon"
-              />
+              <div className="flex items-center justify-center gap-x-2  ">
+                <img
+                  className="w-20 h-20"
+                  data-toggle="tooltip"
+                  data-placement="bottom"
+                  title={weatherData.skyDesc}
+                  src={weatherData.imgUrl}
+                  alt="weather icon"
+                />
+                <div>
+                  <h1 className="font-bold lg:text-2xl mt-2 text-gray-800"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title={`${weatherData.day}`}
+                  >
+                    {weatherData.cityName}
+                  </h1>
+                  <h1
+                    className="font-bold lg:text-3xl hover:cursor-default"
+                    data-toggle="tooltip"
+                    data-placement="bottom"
+                    title={`Humidity: ${weatherData.humidity}\nWind: ${weatherData.wind}\nPrecipitation: ${weatherData.precipitation}`}
+                  >
+                    {weatherData?.temperature}
+                  </h1>
+                </div>
+              </div>
             )}
 
-            <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank"><img src='/left-arrow.svg' className="w-6 h-6 mt-2" alt="go" /></a>
           </div>
-          <div className="lg:ml-2 text-sm flex flex-col items-center justify-between hover:cursor-default">
-            <h1 className="font-bold lg:text-2xl mt-2 text-gray-800"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title={`${weatherData.day}`}
-            >
-              {weatherData.cityName}
-            </h1>
-            <h1
-              className="font-bold lg:text-3xl hover:cursor-default"
-              data-toggle="tooltip"
-              data-placement="bottom"
-              title={`Humidity: ${weatherData.humidity}\nWind: ${weatherData.wind}\nPrecipitation: ${weatherData.precipitation}`}
-            >
-              {weatherData?.temperature}
-            </h1>
-            <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank" className="text-xs text-blue-600">More on Weather.com</a>
-          </div>
+          <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank" className="flex items-center justify-end gap-x-2"><img src='/left-arrow.svg' className="w-6 h-6" alt="go" /><span className="text-xs text-blue-600">More on Weather.com</span></a>
+
         </div>
+
       </div>
 
 
       {/* top stories */}
-      <div className="mr-10 ml-36 flex justify-between gap-x-2">
-        <div className="rounded-xl bg-white  p-8 w-[60%]">
-          <a href="" className="border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 font-semibold">Top Stories <ChevronRight className="mx-1 w-5 h-5 text-blue-500" /></a>
-          {/* {headlines.map((headline: any, index: number) =>  */}
-          {
-            // Convert publishedAt string to Date object
-            // const publishedAtDate = new Date(headline.publishedAt);
-
-            // // Calculate the time difference in milliseconds
-            // const timeDifferenceMs = Date.now() - publishedAtDate.getTime();
-
-            // // Calculate time difference in seconds, minutes, hours, and days
-            // const seconds = Math.floor(timeDifferenceMs / 1000);
-            // const minutes = Math.floor(seconds / 60);
-            // const hours = Math.floor(minutes / 60);
-            // const days = Math.floor(hours / 24);
-
-            // // Define the string to display
-            // let timeAgo = '';
-            // if (days > 0) {
-            //   timeAgo = `${days} day${days > 1 ? 's' : ''} ago`;
-            // } else if (hours > 0) {
-            //   timeAgo = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-            // } else if (minutes > 0) {
-            //   timeAgo = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-            // } else {
-            //   timeAgo = `${seconds} second${seconds > 1 ? 's' : ''} ago`;
-            // }
-
-            // return (
-            //   <div key={index} className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
-            //     <div className="flex justify-between">
-            //       <div>
-            //         <Link target="_blank" href={headline.url} className="text-lg font-bold">{headline.title}.</Link>
-            //         <div className="">
-            //           {/* <img src={headline.source.name} className="my-2" /> */}
-            //           <h1>-{headline.source.name}</h1>
-            //           <h1 className="text-sm text-gray-600">{timeAgo}</h1>
-            //         </div>
-            //       </div>
-            //       <img src={headline.image} className="w-40 h-40 rounded-lg" />
-            //     </div>
-            //   </div>
-            // );
-          }
-          {/* )} */}
+      <div className="lg:mr-10 lg:ml-36 lg:flex  justify-between gap-x-2">
+        <div className="lg:my-2 lg:rounded-xl p-2 bg-white lg:p-8 lg:w-[60%]">
+          <a href="" className="lg:border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 font-semibold">Top Stories <ChevronRight className="mx-1 w-5 h-5 text-blue-500" /></a>
           {loadingNews ? (
-            <div className="">
-              <div className="rounded-md w-full mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
+            <div className="z-0 flex flex-col gap-y-4">
+
+              <div className="w-full mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
                 <div className="animate-pulse flex space-x-4">
                   {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
                   <div className="flex-1 space-y-6 py-1">
@@ -386,8 +324,7 @@ export default function Main() {
                 </div>
               </div>
 
-              <div className="p-4 border-b-[1.5px] flex border-[#c1bdbd] pb-3 gap-x-4">
-
+              <div className="p-4 border-b-[1.5px] hidden lg:flex border-[#c1bdbd] pb-3 gap-x-4">
                 <div className="animate-pulse w-[50%] flex flex-col">
                   <div className="rounded-lg bg-slate-700 h-52 "></div>
                   <div className="flex-1 space-y-6 pt-4">
@@ -398,8 +335,6 @@ export default function Main() {
                     </div>
                   </div>
                 </div>
-
-
                 <div className="animate-pulse w-[50%] flex flex-col">
                   <div className="flex-1 space-y-6 pt-4">
                     <div className="h-2 bg-slate-700 rounded"></div>
@@ -425,7 +360,7 @@ export default function Main() {
                 </div>
               </div>
 
-              <div className="rounded-md w-full mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
+              <div className=" w-full mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
                 <div className="animate-pulse flex space-x-4">
                   {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
                   <div className="flex-1 space-y-6 py-1">
@@ -440,7 +375,35 @@ export default function Main() {
                 </div>
               </div>
 
+              <div className="w-full mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
+                <div className="animate-pulse flex space-x-4">
+                  {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
+                  <div className="flex-1 space-y-6 py-1">
+                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="h-2 bg-slate-700 rounded w-[95%]"></div>
+                    <div className="space-y-3">
+                      {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
+                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                    </div>
+                  </div>
+                  <div className="rounded-lg w-[25%] bg-slate-700 "></div>
+                </div>
+              </div>
 
+              <div className="w-full lg:hidden mx-auto p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
+                <div className="animate-pulse flex space-x-4">
+                  {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
+                  <div className="flex-1 space-y-6 py-1">
+                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="h-2 bg-slate-700 rounded w-[95%]"></div>
+                    <div className="space-y-3">
+                      {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
+                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                    </div>
+                  </div>
+                  <div className="rounded-lg w-[25%] bg-slate-700 "></div>
+                </div>
+              </div>
 
             </div>
 
@@ -449,8 +412,9 @@ export default function Main() {
               {
                 headlines.length > 0 && (
                   <div>
-                    <div className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
-                      <div className="flex justify-between">
+                    <div className="lg:p-4 border-b-[1.5px] pb-3">
+                      <div className="lg:flex justify-between">
+                        <img src={headlines[0]?.image} className="lg:hidden w-full rounded-lg" />
                         <div className="flex flex-col gap-y-2">
                           <Link target="_blank" href={headlines[0]?.url} className="text-xl font-semibold">{headlines[0]?.title}.</Link>
                           <div className="">
@@ -459,82 +423,86 @@ export default function Main() {
                             <h1 className="text-xs text-gray-600">{headlines[0]?.timeAgo}</h1>
                           </div>
                         </div>
-                        <img src={headlines[0]?.image} className="w-[25%] rounded-lg" />
+                        <img src={headlines[0]?.image} className="hidden lg:block w-[50%] h-[50%] lg:w-[25%] lg:h-[100%]  rounded-lg" />
                       </div>
                     </div>
 
 
-                    <div className="p-4 border-b-[1.5px] flex border-[#c1bdbd] pb-3 gap-x-4">
-                      <div className="w-[100%] flex flex-col gap-y-2">
-                        <img src={headlines[1]?.image} className="rounded-lg h-52" />
-                        <Link target="_blank" href={headlines[1]?.url} className="text-lg font-bold">{headlines[1]?.title}.</Link>
-                        <div className="flex flex-col gap-y-1">
+                    <div className="lg:p-4 lg:border-b-[1.5px] lg:flex  pb-3 gap-x-4">
+                      <div className="w-[100%] py-2 border-b-[1.5px] lg:border-none flex lg:flex-col gap-x-2 gap-y-2">
+                        <img src={headlines[1]?.image} className="hidden lg:block rounded-lg h-52" />
+                        <div className="flex flex-col gap-y-2">
+                          <Link target="_blank" href={headlines[1]?.url} className="text-lg font-semibold">{headlines[1]?.title}.</Link>
                           {/* <img src={headline.source.name} className="my-2" /> */}
-                          <h1>-{headlines[1]?.source.name}</h1>
+                          <h1 className="hidden lg:block">-{headlines[1]?.source.name}</h1>
                           <h1 className="text-xs text-gray-600">{headlines[1]?.timeAgo}</h1>
                         </div>
+                        <img src={headlines[1]?.image} className="lg:hidden rounded-lg h-20 w-20" />
                       </div>
 
-                      <div className="flex flex-col justify-center gap-y-4">
-                        <div className="flex flex-col gap-y-2">
+                      <div className="flex flex-col justify-center lg:gap-y-4">
+                        <div className="flex border-b-[1.5px] lg:border-none py-2 lg:flex-col gap-x-2 gap-y-2">
                           {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
-                          <Link target="_blank" href={headlines[2]?.url} className="text-lg font-semibold">{headlines[2]?.title}.</Link>
                           <div className="">
+                            <Link target="_blank" href={headlines[2]?.url} className="text-lg font-semibold">{headlines[2]?.title}.</Link>
                             {/* <img src={headline.source.name} className="my-2" /> */}
-                            <h1 className="text-sm">-{headlines[2]?.source.name}</h1>
+                            <h1 className="text-sm hidden lg:block">-{headlines[2]?.source.name}</h1>
                             <h1 className="text-xs text-gray-600">{headlines[2]?.timeAgo}</h1>
                           </div>
+                          <img src={headlines[2]?.image} className="lg:hidden rounded-lg h-20 w-20" />
                         </div>
-
-                        <div className="flex flex-col gap-y-2">
+                        <div className="flex border-b-[1.5px] lg:border-none py-2 lg:flex-col gap-x-2 gap-y-2">
                           {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
-                          <Link target="_blank" href={headlines[3]?.url} className="text-lg font-semibold">{headlines[3]?.title}.</Link>
                           <div className="">
+                            <Link target="_blank" href={headlines[3]?.url} className="text-lg font-semibold">{headlines[3]?.title}.</Link>
                             {/* <img src={headline.source.name} className="my-2" /> */}
-                            <h1 className="text-sm">-{headlines[3]?.source.name}</h1>
+                            <h1 className="text-sm hidden lg:block">-{headlines[3]?.source.name}</h1>
                             <h1 className="text-xs text-gray-600">{headlines[3]?.timeAgo}</h1>
                           </div>
+                          <img src={headlines[3]?.image} className="lg:hidden rounded-lg h-20 w-20" />
                         </div>
-
-                        <div className="flex flex-col gap-y-2">
+                        <div className="flex gap-x-2 border-b-[1.5px] lg:border-none py-2 lg:flex-col gap-y-2">
                           {/* <img src={headlines[1]?.image} className=" rounded-lg" /> */}
-                          <Link target="_blank" href={headlines[4]?.url} className="text-lg font-semibold">{headlines[4]?.title}.</Link>
                           <div className="">
+                            <Link target="_blank" href={headlines[4]?.url} className="text-lg font-semibold">{headlines[4]?.title}.</Link>
                             {/* <img src={headline.source.name} className="my-2" /> */}
-                            <h1 className="text-sm">-{headlines[4]?.source.name}</h1>
+                            <h1 className="text-sm hidden lg:block">-{headlines[4]?.source.name}</h1>
                             <h1 className="text-xs text-gray-600">{headlines[4]?.timeAgo}</h1>
                           </div>
+                          <img src={headlines[4]?.image} className="lg:hidden rounded-lg h-20 w-20" />
                         </div>
                       </div>
+
                     </div>
 
-                    <div className="p-4 border-b-[1.5px] flex flex-col justify-center border-[#c1bdbd] pb-3">
-                      <div className="flex justify-between">
+                    <div className="lg:p-4 border-b-[1.5px] flex flex-col justify-center pb-3">
+                      <div className="flex justify-between gap-x-2">
                         <div className="flex flex-col gap-y-2">
-                          <Link target="_blank" href={headlines[5]?.url} className="text-xl font-semibold">{headlines[5]?.title}.</Link>
                           <div className="">
+                            <Link target="_blank" href={headlines[5]?.url} className="text-lg lg:text-xl font-semibold">{headlines[5]?.title}.</Link>
                             {/* <img src={headline.source.name} className="my-2" /> */}
-                            <h1>-{headlines[5]?.source.name}</h1>
+                            <h1 className="text-sm hidden lg:block">-{headlines[5]?.source.name}</h1>
                             <h1 className="text-xs text-gray-600">{headlines[5]?.timeAgo}</h1>
                           </div>
                         </div>
-                        <img src={headlines[5]?.image} className="w-[25%] rounded-lg" />
+                        <img src={headlines[5]?.image} className="w-20 h-20 lg:h-full lg:w-[25%] rounded-lg" />
                       </div>
                     </div>
 
-                    <div className="p-4 border-b-[1.5px] border-[#c1bdbd] pb-3">
-                      <div className="flex justify-between">
+                    <div className="lg:p-4 py-2 lg:border-b-[1.5px] flex flex-col justify-center lg:pb-3">
+                      <div className="flex justify-between gap-x-2">
                         <div className="flex flex-col gap-y-2">
-                          <Link target="_blank" href={headlines[6]?.url} className="text-xl font-semibold">{headlines[6]?.title}.</Link>
                           <div className="">
+                            <Link target="_blank" href={headlines[6]?.url} className="text-lg lg:text-xl font-semibold">{headlines[6]?.title}.</Link>
                             {/* <img src={headline.source.name} className="my-2" /> */}
-                            <h1>-{headlines[6]?.source.name}</h1>
+                            <h1 className="text-sm hidden lg:block">-{headlines[6]?.source.name}</h1>
                             <h1 className="text-xs text-gray-600">{headlines[6]?.timeAgo}</h1>
                           </div>
                         </div>
-                        <img src={headlines[6]?.image} className="w-[25%] rounded-lg" />
+                        <img src={headlines[6]?.image} className="w-20 h-20 lg:h-full lg:w-[25%] rounded-lg" />
                       </div>
                     </div>
+
                   </div>
                 )
               }
@@ -544,7 +512,7 @@ export default function Main() {
         </div>
 
         {/* market */}
-        <div className="rounded-xl  bg-white h-96  p-8 w-[40%]">
+        <div className="rounded-xl hidden lg:block bg-white h-96  p-8 w-[40%]">
           <a href="https://www.google.com/finance" target="_blank" className="border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 hover:cursor-pointer font-semibold">Market <ChevronRight className="mx-1 w-5 h-5 text-blue-500" /></a>
 
           <div className="w-full">
@@ -558,24 +526,24 @@ export default function Main() {
               </thead>
 
               {loadingMarket ? (
-                  <tbody>
-                    <tr className="border-t">
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    </tr>
-                    <tr className="border-t">
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                      <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    </tr>
-                    
-                  </tbody>
+                <tbody>
+                  <tr className="border-t">
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                  </tr>
+                  <tr className="border-t">
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                  </tr>
+                  <tr className="border-t">
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                  </tr>
+
+                </tbody>
 
               ) : (
 
