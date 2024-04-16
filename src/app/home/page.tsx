@@ -13,7 +13,7 @@ export default function Main() {
     getWeather()
     // getHeadlines()
     // getGnewsApiData()
-    // getGNews('general')
+    getGNews('general')
     getMarketDetails()
   }, [])
 
