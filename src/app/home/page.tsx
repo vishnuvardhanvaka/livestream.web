@@ -218,9 +218,11 @@ export default function Main() {
               <input
                 placeholder="Search for topics, location & keywords"
                 className={`hidden lg:block bg-[#ebebeb] text-base pl-12 pr-4 py-3 outline-none focus:bg-white focus:shadow-md border-none focus:border-none rounded-lg w-full`}
+                value={searchKeyword}
+                onChange={(e)=>setSearchKeyword((e.target as HTMLInputElement).value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
-                    searchTopic((e.target as HTMLInputElement).value)
+                    searchTopic(searchKeyword.toLowerCase())
                   }
                 }}
               />
@@ -237,7 +239,7 @@ export default function Main() {
                 onChange={(e)=>setSearchKeyword((e.target as HTMLInputElement).value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
-                    searchTopic(searchKeyword)
+                    searchTopic(searchKeyword.toLowerCase())
                   }
                 }}
               />
