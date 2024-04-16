@@ -1,11 +1,10 @@
 "use client"
 
 import Link from "next/link";
-import { Search, AlignJustify, X, ChevronRight, Bus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Globe,Building2,Cpu,Film,Bike,FlaskConical,HeartPulse } from 'lucide-react';
+import { Search,AlignJustify,Bus,ChevronRight,Globe,Building2,Cpu,Film,Bike,FlaskConical,HeartPulse,ArrowLeft,X } from 'lucide-react';
 
 export default function Main() {
 
@@ -42,6 +41,8 @@ export default function Main() {
   const darkTheme = false
   const [loadingNews, setLoadingNews] = useState(false)
   const [loadingMarket, setLoadingMarket] = useState(false)
+  const [searchKeyword,setSearchKeyword]=useState('')
+  const[openSearch,setOpenSearch]=useState(false)
 
   let gnewsapikey_vishnu = '72cc3a0e40cde31dcd9e302002d60ad6';
   let gnewsapikey_animation = '85b718e250165977b2be843f927d8071';
@@ -205,20 +206,47 @@ export default function Main() {
             <span className="bg-[#faae3c] text-white px-2 py-1 rounded-lg">Sphere</span>
           </div>
 
-          <div className="hidden  w-[75%] lg:flex items-center justify-center ">
-            <div className="w-[60%] lg:flex items-center mx-auto ">
+          <div className="lg:w-[75%] w-full flex items-center justify-center">
+            <div className="lg:w-[60%] lg:flex flex items-center mx-auto ">
               <Search
-                className="w-5 h-5 absolute mx-4 text-[#919090]"
+                className="hidden lg:block lg:w-5 lg:h-5 lg:absolute lg:mx-4 lg:text-[#919090] "
+              />
+              <Search
+                className="lg:hidden lg:w-5 lg:h-5 lg:absolute lg:mx-4 lg:text-[#919090] "
+                onClick={(e)=>{setOpenSearch(!openSearch)}}
               />
               <input
                 placeholder="Search for topics, location & keywords"
-                className="bg-[#ebebeb] text-base pl-12 pr-4 py-3 outline-none focus:bg-white focus:shadow-md border-none focus:border-none rounded-lg w-full"
+                className={`hidden lg:block bg-[#ebebeb] text-base pl-12 pr-4 py-3 outline-none focus:bg-white focus:shadow-md border-none focus:border-none rounded-lg w-full`}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     searchTopic((e.target as HTMLInputElement).value)
                   }
                 }}
               />
+
+              <div className={`lg:hidden ${openSearch?'':'hidden'} absolute w-[67%] flex items-center left-1`}>
+              <ArrowLeft
+                className="absolute mx-2 text-[#484848]"
+                onClick={(e)=>{setOpenSearch(!openSearch)}}
+              />
+              <input
+                placeholder="Search"
+                className={`text-base pl-10 pr-8 py-3 outline-none bg-white shadow-md border-none rounded-lg w-full`}
+                value={searchKeyword}
+                onChange={(e)=>setSearchKeyword((e.target as HTMLInputElement).value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    searchTopic(searchKeyword)
+                  }
+                }}
+              />
+              <X
+                className={`${searchKeyword.length>0?'':'hidden'} absolute right-0 mx-2 text-[#484848]`}
+                onClick={(e)=>{setSearchKeyword('')}}
+              />
+
+              </div>
 
             </div>
           </div>
@@ -305,7 +333,7 @@ export default function Main() {
       {/* top stories */}
       <div className="lg:mr-10 lg:ml-36 lg:flex  justify-between gap-x-2">
         <div className="lg:my-2 lg:rounded-xl p-2 bg-white lg:p-8 lg:w-[60%]">
-          <a href="" className="lg:border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 font-semibold">Top Stories <ChevronRight className="mx-1 w-5 h-5 text-blue-500" /></a>
+          <a href="" className="lg:border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 font-bold">Top Stories <ChevronRight className="mx-1 w-6 h-6 text-blue-500 font-bold" /></a>
           {loadingNews ? (
             <div className="z-1 flex flex-col gap-y-4">
 
