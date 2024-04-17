@@ -4,17 +4,42 @@ import Link from "next/link";
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Search,AlignJustify,Bus,ChevronRight,Globe,Building2,Cpu,Film,Bike,FlaskConical,HeartPulse,ArrowLeft,X } from 'lucide-react';
+import { Search, AlignJustify, Bus, ChevronRight, Globe, Building2, Cpu, Film, Bike, FlaskConical, HeartPulse, ArrowLeft, X } from 'lucide-react';
 
 export default function Health() {
 
   useEffect(() => {
     setLoadingMarket(true)
-    getWeather()
+    if (sessionStorage.getItem('weatherDetails')==null){
+      getWeather()
+    } else{
+      var weatherDetailsString=sessionStorage.getItem('weatherDetails')
+      if (weatherDetailsString !== null) {
+        setWeatherData(JSON.parse(weatherDetailsString))
+      } else {
+        console.log('weather details not found in session storage');
+      }
+    }
     // getHeadlines()
     // getGnewsApiData()
-    getGNews('health')
-    getMarketDetails()
+    getGNews('Health')
+    if (sessionStorage.getItem('marketDetails') == null) {
+      // console.log('calling market api')
+      getMarketDetails()
+
+    }
+    else {
+      // console.log('setting ')
+      var marketDetailsString = sessionStorage.getItem('marketDetails');
+      // console.log(marketDetailsString)
+      if (marketDetailsString !== null) {
+        setMarketDetails(JSON.parse(marketDetailsString))
+        setLoadingMarket(false)
+      } else {
+        console.log('Market details not found in session storage');
+        setLoadingMarket(false)
+      }
+    }
   }, [])
 
   const pathname = usePathname()
@@ -41,8 +66,8 @@ export default function Health() {
   const darkTheme = false
   const [loadingNews, setLoadingNews] = useState(false)
   const [loadingMarket, setLoadingMarket] = useState(false)
-  const [searchKeyword,setSearchKeyword]=useState('')
-  const[openSearch,setOpenSearch]=useState(false)
+  const [searchKeyword, setSearchKeyword] = useState('')
+  const [openSearch, setOpenSearch] = useState(false)
 
   let gnewsapikey_vishnu = '72cc3a0e40cde31dcd9e302002d60ad6';
   let gnewsapikey_animation = '85b718e250165977b2be843f927d8071';
@@ -51,7 +76,7 @@ export default function Health() {
 
   async function getGNews(category: string) {
     setLoadingNews(true)
-    let url = 'https://gnews.io/api/v4/top-headlines?category=' + category + '&lang=en&max=10&apikey=' + gnewsapikey_vishnu;
+    let url = 'https://gnews.io/api/v4/top-headlines?category=' + category.toLowerCase() + '&lang=en&max=10&apikey=' + gnewsapikey_vishnu;
     fetch(url)
       .then(function (response) {
         return response.json();
@@ -164,6 +189,8 @@ export default function Health() {
 
       const data = await response.json();
       setWeatherData(data.weatherData)
+      var stringWeather=JSON.stringify(data.weatherData)
+      sessionStorage.setItem('weatherDetails',stringWeather)
       console.log(data);
       // Handle the fetched data as needed
     } catch (error) {
@@ -188,6 +215,11 @@ export default function Health() {
       }
       const data = await response.json();
       setMarketDetails(data.market_trends)
+      var marketDetailsString = JSON.stringify(data.market_trends);
+      // console.log(marketDetailsString,'************')
+      sessionStorage.setItem('marketDetails', marketDetailsString);
+      // console.log(sessionStorage.getItem('marketDetails'),'###########')
+      // console.log(data.market_trends)
       setLoadingMarket(false)
       //   console.log(data);
       // Handle the fetched data as needed
@@ -199,11 +231,10 @@ export default function Health() {
 
   return (
     <div className="bg-[#f8feff]">
-      <nav className="bg-white sticky top-0 z-20 px-4 border-b-[0.1px] border-b-slate-300 p-2  lg:pt-2 lg:pb-0">
+      <nav className="bg-white sticky top-0 z-20 px-4 border-b-[0.1x] border-b-slate-300 p-2  lg:pt-2 lg:pb-0">
         <div className="flex">
           <div className="inline-flex items-center gap-x-2 text-2xl font-bold">
-            <h1 className="text-3xl font-extrabold">Info</h1>
-            <span className="bg-[#faae3c] text-white px-2 py-1 rounded-lg">Sphere</span>
+            <img className="flex w-44" src="/logo.png" alt='infoSphere' />
           </div>
 
           <div className="lg:w-[75%] w-full flex items-center justify-center">
@@ -213,38 +244,40 @@ export default function Health() {
               />
               <Search
                 className="lg:hidden lg:w-5 lg:h-5 lg:absolute lg:mx-4 lg:text-[#919090] "
-                onClick={(e)=>{setOpenSearch(!openSearch)}}
+                onClick={(e) => { setOpenSearch(!openSearch) }}
               />
               <input
                 placeholder="Search for topics, location & keywords"
                 className={`hidden lg:block bg-[#ebebeb] text-base pl-12 pr-4 py-3 outline-none focus:bg-white focus:shadow-md border-none focus:border-none rounded-lg w-full`}
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword((e.target as HTMLInputElement).value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
-                    searchTopic((e.target as HTMLInputElement).value)
+                    searchTopic(searchKeyword.toLowerCase())
                   }
                 }}
               />
 
-              <div className={`lg:hidden ${openSearch?'':'hidden'} absolute w-[67%] flex items-center left-1`}>
-              <ArrowLeft
-                className="absolute mx-2 text-[#484848]"
-                onClick={(e)=>{setOpenSearch(!openSearch)}}
-              />
-              <input
-                placeholder="Search"
-                className={`text-base pl-10 pr-8 py-3 outline-none bg-white shadow-md border-none rounded-lg w-full`}
-                value={searchKeyword}
-                onChange={(e)=>setSearchKeyword((e.target as HTMLInputElement).value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    searchTopic(searchKeyword)
-                  }
-                }}
-              />
-              <X
-                className={`${searchKeyword.length>0?'':'hidden'} absolute right-0 mx-2 text-[#484848]`}
-                onClick={(e)=>{setSearchKeyword('')}}
-              />
+              <div className={`lg:hidden ${openSearch ? '' : 'hidden'} absolute w-[67%] flex items-center left-1`}>
+                <ArrowLeft
+                  className="absolute mx-2 text-[#484848]"
+                  onClick={(e) => { setOpenSearch(!openSearch) }}
+                />
+                <input
+                  placeholder="Search"
+                  className={`text-base pl-10 pr-8 py-3 outline-none bg-white shadow-md border-none rounded-lg w-full`}
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword((e.target as HTMLInputElement).value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      searchTopic(searchKeyword.toLowerCase())
+                    }
+                  }}
+                />
+                <X
+                  className={`${searchKeyword.length > 0 ? '' : 'hidden'} absolute right-0 mx-2 text-[#484848]`}
+                  onClick={(e) => { setSearchKeyword('') }}
+                />
 
               </div>
 
@@ -253,9 +286,9 @@ export default function Health() {
         </div>
 
         <div className="hidden lg:flex gap-x-6 font-semibold text-md items-center mt-4 justify-center">
-        {Object.entries(tabItems).map(([key, Component], index) => (
-              <a key={index} href={`/${key.toLowerCase()}`} className={` ${pathname === '/' + key.toLowerCase() ? 'underline cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{key}</a>
-            )
+          {Object.entries(tabItems).map(([key, Component], index) => (
+            <a key={index} href={`/${key.toLowerCase()}`} className={` ${pathname === '/' + key.toLowerCase() ? 'underline cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{key}</a>
+          )
           )}
         </div>
         <div onClick={(e) => { setOpenMenu(!openMenu) }} className={`absolute right-5 top-1/2 transform  -translate-y-1/2 md:hidden hover:scale-105 cursor-pointer `}>
@@ -266,20 +299,20 @@ export default function Health() {
       </nav>
 
       {/* {sidebar} */}
-        <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? "z-10 fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
-          <ul className="px-6 flex flex-col">
-            {Object.entries(tabItems).map(([key, Component], index) => (
-              <div key={index} className="flex flex-col">
-                <a
-                  href={`/${key.toLowerCase()}`}
-                  className={` ${pathname === '/' + key.toLowerCase() ? 'border-b-blue-500 text-blue-500 cursor-default' : ''} flex gap-x-5 py-5 ${darkTheme ? "text-white" : "text-black "} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600'}`}
-                >
+      <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? "z-10 fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
+        <ul className="px-6 flex flex-col">
+          {Object.entries(tabItems).map(([key, Component], index) => (
+            <div key={index} className="flex flex-col">
+              <a
+                href={`/${key.toLowerCase()}`}
+                className={` ${pathname === '/' + key.toLowerCase() ? 'border-b-blue-500 text-blue-500 cursor-default' : ''} flex gap-x-5 py-5 ${darkTheme ? "text-white" : "text-black "} ${false ? ' transition-colors duration-300 transform text-blue-600 border-b-2 border-blue-500' : 'border-gray-600'}`}
+              >
                 <Component />
                 <h1 className="font-semibold">{key}</h1>
-                </a>
-              </div>
-            ))}
-          </ul>
+              </a>
+            </div>
+          ))}
+        </ul>
       </div>
 
 
@@ -332,7 +365,7 @@ export default function Health() {
 
       {/* top stories */}
       <div className="lg:mr-10 lg:ml-36 lg:flex  justify-between gap-x-2">
-        <div className="lg:my-2 lg:rounded-xl p-2 bg-white lg:p-8 lg:w-[60%]">
+        <div className="my-2 lg:my-0 lg:rounded-xl p-2 bg-white lg:p-8 lg:w-[60%]">
           <a href="" className="lg:border-b-[1.5px] border-[#c1bdbd] pb-3 text-xl flex items-center text-blue-500 font-bold">Top Stories <ChevronRight className="mx-1 w-6 h-6 text-blue-500 font-bold" /></a>
           {loadingNews ? (
             <div className="z-1 flex flex-col gap-y-4">
@@ -357,7 +390,7 @@ export default function Health() {
                   <div className="rounded-lg bg-slate-700 h-52 "></div>
                   <div className="flex-1 space-y-6 pt-4">
                     <div className="h-2 bg-slate-700 rounded"></div>
-                    <div className="space-y-3">
+                    <div className="space-y-3d">
                       <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div>
                       <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
                     </div>
@@ -576,7 +609,7 @@ export default function Health() {
               ) : (
 
                 <tbody>
-                  {marketDetails.map((details: any, index: number) => (
+                  {marketDetails?.map((details: any, index: number) => (
                     <tr key={index} className="border-t">
                       <td className="px-4 py-3">{details.company_name}</td>
                       <td className="px-4 py-3">${details.last_trade_value}</td>
