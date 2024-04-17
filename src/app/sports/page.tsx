@@ -64,7 +64,7 @@ export default function Sports() {
   const [marketDetails, setMarketDetails] = useState<any>([])
   const [openMenu, setOpenMenu] = useState(false)
   const darkTheme = false
-  const [loadingNews, setLoadingNews] = useState(false)
+  const [loadingNews, setLoadingNews] = useState(true)
   const [loadingMarket, setLoadingMarket] = useState(false)
   const [searchKeyword, setSearchKeyword] = useState('')
   const [openSearch, setOpenSearch] = useState(false)
@@ -374,48 +374,48 @@ export default function Sports() {
                 <div className="animate-pulse flex space-x-4">
                   {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
                   <div className="flex-1 space-y-6 py-1">
-                    <div className="h-2 bg-slate-700 rounded"></div>
-                    <div className="h-2 bg-slate-700 rounded w-[95%]"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded w-[95%]"></div>
                     <div className="space-y-3">
                       {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
-                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
-                  <div className="rounded-lg w-[25%] bg-slate-700 "></div>
+                  <div className="rounded-lg w-[25%] bg-[#dddcdc] "></div>
                 </div>
               </div>
 
               <div className="p-4 border-b-[1.5px] hidden lg:flex border-[#c1bdbd] pb-3 gap-x-4">
                 <div className="animate-pulse w-[50%] flex flex-col">
-                  <div className="rounded-lg bg-slate-700 h-52 "></div>
+                  <div className="rounded-lg bg-[#dddcdc] h-52 "></div>
                   <div className="flex-1 space-y-6 pt-4">
-                    <div className="h-2 bg-slate-700 rounded"></div>
-                    <div className="space-y-3d">
-                      <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div>
-                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded"></div>
+                    <div className="space-y-3">
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-2 w-[40%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
                 </div>
                 <div className="animate-pulse w-[50%] flex flex-col">
                   <div className="flex-1 space-y-6 pt-4">
-                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded"></div>
                     <div className="space-y-3">
-                      <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div>
-                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-2 w-[40%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
                   <div className="flex-1 space-y-6 pt-4">
-                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded"></div>
                     <div className="space-y-3">
-                      <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div>
-                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-2 w-[40%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
                   <div className="flex-1 space-y-6 pt-4">
-                    <div className="h-2 bg-slate-700 rounded"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded"></div>
                     <div className="space-y-3">
-                      {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
-                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-2 w-[40%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
                 </div>
@@ -425,14 +425,14 @@ export default function Sports() {
                 <div className="animate-pulse flex space-x-4">
                   {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
                   <div className="flex-1 space-y-6 py-1">
-                    <div className="h-2 bg-slate-700 rounded"></div>
-                    <div className="h-2 bg-slate-700 rounded w-[95%]"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded w-[95%]"></div>
                     <div className="space-y-3">
                       {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
-                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
-                  <div className="rounded-lg w-[25%] bg-slate-700 "></div>
+                  <div className="rounded-lg w-[25%] bg-[#dddcdc] "></div>
                 </div>
               </div>
 
@@ -440,14 +440,14 @@ export default function Sports() {
                 <div className="animate-pulse flex space-x-4">
                   {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
                   <div className="flex-1 space-y-6 py-1">
-                    <div className="h-2 bg-slate-700 rounded"></div>
-                    <div className="h-2 bg-slate-700 rounded w-[95%]"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded w-[95%]"></div>
                     <div className="space-y-3">
                       {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
-                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
-                  <div className="rounded-lg w-[25%] bg-slate-700 "></div>
+                  <div className="rounded-lg w-[25%] bg-[#dddcdc] "></div>
                 </div>
               </div>
 
@@ -455,14 +455,14 @@ export default function Sports() {
                 <div className="animate-pulse flex space-x-4">
                   {/* <div className="rounded-full bg-slate-700 h-10 w-10"></div> */}
                   <div className="flex-1 space-y-6 py-1">
-                    <div className="h-2 bg-slate-700 rounded"></div>
-                    <div className="h-2 bg-slate-700 rounded w-[95%]"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded"></div>
+                    <div className="h-2 bg-[#dddcdc] rounded w-[95%]"></div>
                     <div className="space-y-3">
                       {/* <div className="h-2 bg-slate-700 rounded col-span-2 w-[40%]"></div> */}
-                      <div className="h-2 bg-slate-700 rounded col-span-1 w-[20%]"></div>
+                      <div className="h-2 bg-[#dddcdc] rounded col-span-1 w-[20%]"></div>
                     </div>
                   </div>
-                  <div className="rounded-lg w-[25%] bg-slate-700 "></div>
+                  <div className="rounded-lg w-[25%] bg-[#dddcdc] "></div>
                 </div>
               </div>
 
@@ -589,19 +589,19 @@ export default function Sports() {
               {loadingMarket ? (
                 <tbody>
                   <tr className="border-t">
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
                   </tr>
                   <tr className="border-t">
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
                   </tr>
                   <tr className="border-t">
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
-                    <td className="px-4 py-3"><div className="h-2 w-20 bg-slate-700 rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
+                    <td className="px-4 py-3"><div className="h-2 w-20 bg-[#dddcdc] rounded col-span-2 mx-auto animate-pulse"></div></td>
                   </tr>
 
                 </tbody>
