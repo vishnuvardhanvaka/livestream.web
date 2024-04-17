@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { Search, AlignJustify, Bus, ChevronRight, Globe, Building2, Cpu, Film, Bike, FlaskConical, HeartPulse, ArrowLeft, X } from 'lucide-react';
 
-export default function Sports() {
+export default function Main() {
 
   useEffect(() => {
     setLoadingMarket(true)
@@ -22,7 +22,7 @@ export default function Sports() {
     }
     // getHeadlines()
     // getGnewsApiData()
-    getGNews('Sports')
+    getGNews(pathname.split('/')[1])
     if (sessionStorage.getItem('marketDetails') == null) {
       // console.log('calling market api')
       getMarketDetails()
@@ -231,7 +231,7 @@ export default function Sports() {
 
   return (
     <div className="bg-[#f8feff]">
-      <nav className="bg-white sticky top-0 z-20 px-4 border-b-[0.1x] border-b-slate-300 p-2  lg:pt-2 lg:pb-0">
+      <nav className="bg-white sticky top-0 z-20 px-4 border-b-[0.1px] p-2  lg:pt-2 lg:pb-0">
         <div className="flex">
           <div className="inline-flex items-center gap-x-2 text-2xl font-bold">
             <img className="flex w-44" src="/logo.png" alt='infoSphere' />
@@ -287,7 +287,7 @@ export default function Sports() {
 
         <div className="hidden lg:flex gap-x-6 font-semibold text-md items-center mt-4 justify-center">
           {Object.entries(tabItems).map(([key, Component], index) => (
-            <a key={index} href={`/${key.toLowerCase()}`} className={` ${pathname === '/' + key.toLowerCase() ? 'underline cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-8  py-1 px-2 rounded-md`}>{key}</a>
+            <a key={index} href={`/${key.toLowerCase()}`} className={` ${pathname === '/' + key.toLowerCase() ? 'underline decoration-blue-500 decoration-[2px] cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-[9px]  py-1 px-2 rounded-md`}>{key}</a>
           )
           )}
         </div>
