@@ -9,7 +9,7 @@ import { Search, AlignJustify, MessageSquare, ChevronDown, Bus, ChevronRight, Gl
 import { setuid } from "process";
 
 import Chatbot from "./components/Chatbot";
-import '../components/scrollbar.css'
+import './components/scrollbar.css'
 
 export default function Main() {
 
