@@ -1,0 +1,10 @@
+{
+    "locales":[
+        "ro",
+        "en"
+    ],
+    "defaultLocale":"ro",
+    "pages":{
+        "*":["common"]
+    }
+}

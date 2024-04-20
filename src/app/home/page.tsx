@@ -4,34 +4,36 @@ import Link from "next/link";
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Search, AlignJustify, Bus, ChevronRight, Globe, Building2, Cpu, Film, Bike, FlaskConical, HeartPulse, ArrowLeft, X } from 'lucide-react';
+import { NextRequest, NextResponse } from 'next/server';
+import { Search, AlignJustify, MessageSquare, ChevronDown, Bus, ChevronRight, Globe, Building2, Cpu, Film, Bike, FlaskConical, HeartPulse, ArrowLeft, X } from 'lucide-react';
+import { setuid } from "process";
+
+import Chatbot from "../components/Chatbot";
+import '../components/scrollbar.css'
 
 export default function Main() {
 
   useEffect(() => {
     setLoadingMarket(true)
-    if (sessionStorage.getItem('weatherDetails')==null){
+    if (sessionStorage.getItem('weatherDetails') == null) {
       getWeather()
-    } else{
-      var weatherDetailsString=sessionStorage.getItem('weatherDetails')
+    } else {
+      var weatherDetailsString = sessionStorage.getItem('weatherDetails')
       if (weatherDetailsString !== null) {
         setWeatherData(JSON.parse(weatherDetailsString))
       } else {
         console.log('weather details not found in session storage');
       }
     }
-    // getHeadlines()
-    // getGnewsApiData()
-    getGNews(pathname.split('/')[1])
-    if (sessionStorage.getItem('marketDetails') == null) {
-      // console.log('calling market api')
-      getMarketDetails()
 
+    getGNews(pathname.split('/')[1])
+    // getGeoCoordinates()
+
+    if (sessionStorage.getItem('marketDetails') == null) {
+      getMarketDetails()
     }
     else {
-      // console.log('setting ')
       var marketDetailsString = sessionStorage.getItem('marketDetails');
-      // console.log(marketDetailsString)
       if (marketDetailsString !== null) {
         setMarketDetails(JSON.parse(marketDetailsString))
         setLoadingMarket(false)
@@ -43,11 +45,10 @@ export default function Main() {
   }, [])
 
   const pathname = usePathname()
-  const currentDate = new Date();
   const tabItems = { 'Home': Globe, 'Bussiness': Building2, 'Technology': Cpu, 'Entertainment': Film, 'Sports': Bike, 'Science': FlaskConical, 'Health': HeartPulse }
-  const tabIcons = [HeartPulse, HeartPulse, HeartPulse, HeartPulse, HeartPulse, HeartPulse, HeartPulse]
-  const formattedDate = format(currentDate, 'EEEE, d MMMM');
   const [headlines, setHeadlines] = useState<any>([])
+  const currentDate = new Date();
+  const formattedDate = format(currentDate, 'EEEE, d MMMM');
   const [weatherData, setWeatherData] = useState({
     'cityName': 'Vijayawada',
     'day': '',
@@ -62,16 +63,108 @@ export default function Main() {
     'skyDesc': ''
   })
   const [marketDetails, setMarketDetails] = useState<any>([])
+
   const [openMenu, setOpenMenu] = useState(false)
   const darkTheme = false
   const [loadingNews, setLoadingNews] = useState(true)
   const [loadingMarket, setLoadingMarket] = useState(false)
   const [searchKeyword, setSearchKeyword] = useState('')
   const [openSearch, setOpenSearch] = useState(false)
+  const [userLocation, setUserLocation] = useState('')
+
+  const [openChatBot, setOpenChatBot] = useState(false)
 
   let gnewsapikey_vishnu = '72cc3a0e40cde31dcd9e302002d60ad6';
   let gnewsapikey_animation = '85b718e250165977b2be843f927d8071';
   let category = 'general';
+
+  function getCity(coordinates: any) {
+    var xhr = new XMLHttpRequest();
+    var lat = coordinates[0];
+    var lng = coordinates[1];
+
+    // Paste your LocationIQ token below. 
+    xhr.open('GET', "https://us1.locationiq.com/v1/reverse.php?key=YOUR_PRIVATE_TOKEN&lat=" + lat + "&lon=" + lng + "&format=json", true);
+    xhr.send();
+    xhr.onreadystatechange = processRequest;
+    xhr.addEventListener("readystatechange", processRequest, false);
+
+    function processRequest(e: any) {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        var response = JSON.parse(xhr.responseText);
+        var city = response.address.city;
+        console.log(city);
+        return;
+      }
+    }
+  }
+
+  // const fetchCityName = async (latitude, longitude) => {
+  //   try {
+  //     const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=YOUR_API_KEY`);
+  //     const data = await response.json();
+  //     if (data.status === 'OK') {
+  //       const city = data.results[0].address_components.find(component => component.types.includes('locality'));
+  //       if (city) {
+  //         setUserCity(city.long_name);
+  //       } else {
+  //         setUserCity('Unknown');
+  //       }
+  //     } else {
+  //       console.error('Error fetching city name:', data.error_message || data.status);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching city name:', error);
+  //   }
+  // };
+
+  async function getGeoCoordinates() {
+    // my exact coordinates: latitude: 16.775690 , longitude: 80.290138 
+    var options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    };
+    function success(pos: any) {
+      var crd = pos.coords;
+
+      // var lat = crd.latitude.toString();
+      // var lng = crd.longitude.toString();
+      // var coordinates = [lat, lng];
+      // console.log(`Latitude: ${lat}, Longitude: ${lng}`);
+      getLocationData(crd.latitude, crd.longitude)
+      return;
+    }
+    function error(err: any) {
+      console.warn(`ERROR(${err.code}): ${err.message}`);
+    }
+    navigator.geolocation.getCurrentPosition(success, error, options);
+  }
+
+  async function getLocationData(latitude: any, lontitude: any, localityLanguage = 'en', endpoint = 'reverse-geocode-client', server = 'api.bigdatacloud.net') {
+    const payload = {
+      latitude: parseFloat(latitude.toFixed(5)).toString(), // Convert latitude to string
+      longitude: parseFloat(lontitude.toFixed(5)).toString(), // Convert longitude to string
+      localityLanguage,
+    };
+    try {
+      const response = await fetch(
+        `https://${server}/data/${endpoint}?${new URLSearchParams(payload).toString()}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data, '########################')
+      // setLocation(data.localityInfo.administrative[1].name);
+      setUserLocation(data)
+    } catch (err) {
+      console.error(err);
+      console.log('Failed to fetch location data');
+    }
+
+  }
+
 
 
   async function getGNews(category: string) {
@@ -84,19 +177,13 @@ export default function Main() {
       .then(function (data) {
         let articles = data.articles;
         for (let i = 0; i < articles?.length; i++) {
-          // articles[i].title
           const publishedAtDate = new Date(articles[i].publishedAt);
-
-          // Calculate the time difference in milliseconds
           const timeDifferenceMs = Date.now() - publishedAtDate.getTime();
-
-          // Calculate time difference in seconds, minutes, hours, and days
           const seconds = Math.floor(timeDifferenceMs / 1000);
           const minutes = Math.floor(seconds / 60);
           const hours = Math.floor(minutes / 60);
           const days = Math.floor(hours / 24);
-
-          // Define the string to display
+          
           let timeAgo = '';
           if (days > 0) {
             timeAgo = `${days} day${days > 1 ? 's' : ''} ago`;
@@ -108,7 +195,6 @@ export default function Main() {
             timeAgo = `${seconds} second${seconds > 1 ? 's' : ''} ago`;
           }
           articles[i]['timeAgo'] = timeAgo;
-
         }
         // console.log(articles)
         setHeadlines(articles)
@@ -151,7 +237,6 @@ export default function Main() {
           const hours = Math.floor(minutes / 60);
           const days = Math.floor(hours / 24);
 
-          // Define the string to display
           let timeAgo = '';
           if (days > 0) {
             timeAgo = `${days} day${days > 1 ? 's' : ''} ago`;
@@ -189,8 +274,8 @@ export default function Main() {
 
       const data = await response.json();
       setWeatherData(data.weatherData)
-      var stringWeather=JSON.stringify(data.weatherData)
-      sessionStorage.setItem('weatherDetails',stringWeather)
+      var stringWeather = JSON.stringify(data.weatherData)
+      sessionStorage.setItem('weatherDetails', stringWeather)
       console.log(data);
       // Handle the fetched data as needed
     } catch (error) {
@@ -233,8 +318,13 @@ export default function Main() {
     <div className="bg-[#f8feff]">
       <nav className="bg-white sticky top-0 z-20 px-4 border-b-[0.1px] p-2  lg:pt-2 lg:pb-0">
         <div className="flex">
-          <div className="inline-flex items-center gap-x-2 text-2xl font-bold">
+          {/* <div className="inline-flex items-center gap-x-2 text-2xl font-bold">
             <img className="flex w-44" src="/logo.png" alt='infoSphere' />
+          </div> */}
+          <div className="inline-flex items-center gap-x-2 text-2xl font-bold">
+            <h1 className="text-3xl font-extrabold">Info</h1>
+            {/* <span className="bg-blue-500 text-white px-2 py-1 rounded-lg">Sphere</span> */}
+            <span className="bg-[#faae3c] text-white px-2 py-1 rounded-lg">Sphere</span>
           </div>
 
           <div className="lg:w-[75%] w-full flex items-center justify-center">
@@ -287,7 +377,7 @@ export default function Main() {
 
         <div className="hidden lg:flex gap-x-6 font-semibold text-md items-center mt-4 justify-center">
           {Object.entries(tabItems).map(([key, Component], index) => (
-            <a key={index} href={`/${key.toLowerCase()}`} className={` ${pathname === '/' + key.toLowerCase() ? 'underline decoration-blue-500 decoration decoration-[2px] cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-[9px]  py-1 px-2 rounded-md`}>{key}</a>
+            <a key={index} href={`/${key.toLowerCase()}`} className={` ${pathname === '/' + key.toLowerCase() ? 'underline decoration-green-500 decoration decoration-[2px] cursor-default' : 'hover:bg-[#efeeee] hover:cursor-pointer'} underline-offset-[9px]  py-1 px-2 rounded-md`}>{key}</a>
           )
           )}
         </div>
@@ -313,6 +403,35 @@ export default function Main() {
             </div>
           ))}
         </ul>
+      </div>
+
+      <div className="fixed bottom-7 right-7 lg:bottom-10 flex flex-col justify-end items-end z-50">
+        <div
+          className={`${openChatBot ? "scale-100 bottom-10 translate-y-0" : "translate-y-1/2 translate-x-[40%] scale-0"} duration-200`}
+        // className={`${openChatBot ? "z-10 fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}
+        >
+          <Chatbot />
+        </div>
+        <div className="" role="button" aria-label="Open Intercom Messenger" aria-live="polite">
+          <button
+            onClick={(e) => { setOpenChatBot(!openChatBot) }}
+            className={`${openChatBot ? 'hidden' : ''} bg-blue-500 relative lg:hover:scale-110 duration-200 text-white w-[54px] h-[54px] p-3 border-2 rounded-full`}
+          >
+            <svg
+              onClick={(e) => { setOpenChatBot(!openChatBot) }}
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 28 32"
+            >
+              <path fill="white" d="M28 32s-4.714-1.855-8.527-3.34H3.437C1.54 28.66 0 27.026 0 25.013V3.644C0 1.633 1.54 0 3.437 0h21.125c1.898 0 3.437 1.632 3.437 3.645v18.404H28V32zm-4.139-11.982a.88.88 0 00-1.292-.105c-.03.026-3.015 2.681-8.57 2.681-5.486 0-8.517-2.636-8.571-2.684a.88.88 0 00-1.29.107 1.01 1.01 0 00-.219.708.992.992 0 00.318.664c.142.128 3.537 3.15 9.762 3.15 6.226 0 9.621-3.022 9.763-3.15a.992.992 0 00.317-.664 1.01 1.01 0 00-.218-.707z">
+              </path>
+            </svg>
+          </button>
+
+          <ChevronDown
+            onClick={(e) => { setOpenChatBot(!openChatBot) }}
+            className={`${openChatBot ? '' : 'hidden'} bg-blue-500 relative lg:hover:scale-110 duration-200 text-white w-[54px] h-[54px] p-2 border-2 rounded-full`}
+          />
+        </div>
       </div>
 
 
@@ -359,7 +478,6 @@ export default function Main() {
           <a href="https://weather.com/en-IN/weather/today/l/03a9f9ce4cdb0a8f7950463d357712794850379295572bbf6a3ae045767a037c" target="_blank" className="flex items-center justify-end gap-x-2"><img src='/left-arrow.svg' className="w-6 h-6" alt="go" /><span className="text-xs text-blue-600">More on Weather.com</span></a>
 
         </div>
-
       </div>
 
 
@@ -639,7 +757,6 @@ export default function Main() {
 
         </div>
       </div >
-
 
     </div >
   )
