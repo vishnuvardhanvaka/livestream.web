@@ -1,7 +1,7 @@
 "use client"
 
-import { useState,useEffect } from "react"
-import { BotMessageSquare, User, Dot } from 'lucide-react';
+import { useState, useEffect, useRef } from "react"
+import { BotMessageSquare, User, Dot, Send, SendHorizontal } from 'lucide-react';
 import './scrollbar.css'
 
 export default function Chatbot() {
@@ -16,9 +16,18 @@ export default function Chatbot() {
         }
         return [];
     });
+
+    const chatContainerRef: any = useRef(null);
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [chatHistory]);
+
     useEffect(() => {
         sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
     }, []);
+
 
 
     async function getAnswer() {
@@ -27,7 +36,7 @@ export default function Chatbot() {
             'agent': 'loader',
             'value': 'loading...'
         })
-        
+
         var answer = 'Hello vishnu. This is Testing bot User Interface.'
         chatHistory.pop()
         chatHistory.push({
@@ -40,7 +49,7 @@ export default function Chatbot() {
         setQuery('')
     }
     return (
-        <div className="bg-white shadow-xl mb-2 rounded-2xl h-[80vh] w-80 lg:w-[60vh] ">
+        <div className="bg-white shadow-xl mb-2 rounded-2xl h-[68vh] w-[95vw] lg:w-[60vh] lg:h-[70vh] ">
             <div className="h-[12%] bg-blue-400 flex justify-start items-center rounded-t-2xl">
                 {/* <BotMessageSquare
                     className="w-12 h-12 mx-5 text-black"
@@ -51,8 +60,8 @@ export default function Chatbot() {
                 /> */}
             </div>
 
-                
-            <div id="scrollbar-chat" className="h-[78%] overflow-y-scroll px-4 py-2">
+
+            <div id="scrollbar-chat" ref={chatContainerRef} className="h-[78%] overflow-y-auto overflow-x-hidden lg:px-4 py-2">
                 {chatHistory.map((item: any, index: any) => (
                     <div key={index} className={`${item.agent === 'user' ? 'justify-end ml-auto' : "justify-start"} text-wrap items-end my-4 flex   w-[80%]`}>
 
@@ -98,16 +107,15 @@ export default function Chatbot() {
                     </div>
                 ))}
             </div>
-            
-            <div className="w-full h-[10%] border-t-[1px]">
+
+            <div className="w-full relative flex items-center h-[10%] border-t-[1px]">
                 <input
-                    className="w-full pr-10 pl-6 text-md placeholder:text-base outline-none shadow-lg placeholder:font-normal py-2 rounded-b-2xl resize-none focus:border-none h-full"
+                    className="w-full pr-10 pl-6 text-md placeholder:text-base outline-none shadow-lg placeholder:font-normal rounded-b-2xl resize-none focus:border-none h-full"
                     value={query}
                     onChange={(e) => { setQuery(e.target.value) }}
                     placeholder="Ask any question related to news"
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
-                            // searchTopic(searchKeyword.toLowerCase())
                             var d = {
                                 'agent': 'user',
                                 'value': (e.target as HTMLInputElement).value
@@ -118,6 +126,17 @@ export default function Chatbot() {
                     }}
                 />
                 {/* </textarea> */}
+                <SendHorizontal
+                    onClick={(e) => {
+                        var d = {
+                            'agent': 'user',
+                            'value': query
+                        }
+                        chatHistory.push(d)
+                        getAnswer()
+                    }}
+                    className="absolute right-2 w-6 text-blue-400"
+                />
             </div>
         </div>
 
