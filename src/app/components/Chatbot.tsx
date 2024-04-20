@@ -115,7 +115,7 @@ export default function Chatbot() {
                     onChange={(e) => { setQuery(e.target.value) }}
                     placeholder="Ask any question related to news"
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
+                        if (e.key === 'Enter' && !e.shiftKey && query.length>0) {
                             var d = {
                                 'agent': 'user',
                                 'value': (e.target as HTMLInputElement).value
@@ -127,15 +127,18 @@ export default function Chatbot() {
                 />
                 {/* </textarea> */}
                 <SendHorizontal
+                    
                     onClick={(e) => {
-                        var d = {
-                            'agent': 'user',
-                            'value': query
+                        if(query.length>0){
+                            var d = {
+                                'agent': 'user',
+                                'value': query
+                            }
+                            chatHistory.push(d)
+                            getAnswer()
                         }
-                        chatHistory.push(d)
-                        getAnswer()
                     }}
-                    className="absolute right-2 w-6 text-blue-400"
+                    className={`absolute right-2 w-6  ${query.length>0?'lg:hover:cursor-pointer text-blue-400':'text-gray-300'}`}
                 />
             </div>
         </div>
