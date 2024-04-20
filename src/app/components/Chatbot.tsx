@@ -100,7 +100,7 @@ export default function Chatbot() {
             </div>
             
             <div className="w-full h-[10%] border-t-[1px]">
-                <textarea
+                <input
                     className="w-full pr-10 pl-6 text-md placeholder:text-base outline-none shadow-lg placeholder:font-normal py-2 rounded-b-2xl resize-none focus:border-none h-full"
                     value={query}
                     onChange={(e) => { setQuery(e.target.value) }}
@@ -116,8 +116,8 @@ export default function Chatbot() {
                             getAnswer()
                         }
                     }}
-                >
-                </textarea>
+                />
+                {/* </textarea> */}
             </div>
         </div>
 
