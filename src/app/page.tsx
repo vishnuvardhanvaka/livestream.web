@@ -15,7 +15,7 @@ export default function Main() {
 
   useEffect(() => {
     setLoadingMarket(true)
-    if (sessionStorage.getItem('weatherDetails') == null) {
+    if (sessionStorage.getItem('weatherDetails') == null || sessionStorage.getItem('weatherDetails')==='{}') {
       getWeather()
     } else {
       var weatherDetailsString = sessionStorage.getItem('weatherDetails')
@@ -29,7 +29,7 @@ export default function Main() {
     getGNews(pathname.split('/')[1])
     // getGeoCoordinates()
 
-    if (sessionStorage.getItem('marketDetails') == null) {
+    if (sessionStorage.getItem('marketDetails') == null || sessionStorage.getItem('marketDetails')==='[]') {
       getMarketDetails()
     }
     else {
@@ -183,7 +183,7 @@ export default function Main() {
           const minutes = Math.floor(seconds / 60);
           const hours = Math.floor(minutes / 60);
           const days = Math.floor(hours / 24);
-          
+
           let timeAgo = '';
           if (days > 0) {
             timeAgo = `${days} day${days > 1 ? 's' : ''} ago`;
@@ -277,7 +277,6 @@ export default function Main() {
       var stringWeather = JSON.stringify(data.weatherData)
       sessionStorage.setItem('weatherDetails', stringWeather)
       console.log(data);
-      // Handle the fetched data as needed
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
     }

@@ -4,10 +4,12 @@ import { useState, useEffect, useRef } from "react"
 import { BotMessageSquare, User, Dot, Send, SendHorizontal, Sparkles, Sparkle } from 'lucide-react';
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import './scrollbar.css'
+import { Container } from "postcss";
 
 export default function Chatbot() {
 
     const [query, setQuery] = useState('')
+    const [reachingModel, setReachingModel] = useState(false)
     const [loadingAnswer, setLoadingAnswer] = useState(false)
     const [chatHistory, setChatHistory] = useState(() => {
         if (typeof window !== 'undefined' && window.sessionStorage) {
@@ -51,7 +53,7 @@ export default function Chatbot() {
             },
             {
                 role: "model",
-                parts: [{ text: "Yes sure. I'm your friend Sphere. I will try my best and help you with all your queries." }],
+                parts: [{ text: "Yes sure. I'm your friend Scout. I will try my best and help you with all your queries related to news." }],
             },
             {
                 role: "user",
@@ -60,6 +62,14 @@ export default function Chatbot() {
             {
                 role: "model",
                 parts: [{ text: "My name is Scout. Developed by Info Sphere." }],
+            },
+            {
+                role: "user",
+                parts: [{ text: "What is your purpose?" }],
+            },
+            {
+                role: "model",
+                parts: [{ text: "My purpose is to help you with answering queries related to latest news like giving latest news updates and much more related to latest news." }],
             },
         ],
         generationConfig: {
@@ -74,63 +84,76 @@ export default function Chatbot() {
 
     async function getAnswer() {
         console.log('gettting answer....')
+        setLoadingAnswer(true)
+        let userQ = { role: 'user', content: query }
+        setQuery('')
+        setChatHistory((prevChat: any) => [
+            ...prevChat,
+            userQ,
+        ]);
+        setChatHistory((prevChat: any) => [
+            ...prevChat,
+            {role:'reachingModel',content:'reaching...'},
+        ]);
+
+        
+        let textt = '';
+
         try {
-            setLoadingAnswer(true)
-            let userQ = { role: 'user', content: query }
-            setQuery('')
-            setChatHistory((prevChat: any) => [
-                ...prevChat,
-                userQ,
-            ]);
-            let textt = '';
-            try {
-                const result = await chat.sendMessageStream(userQ.content);
-                for await (const chunk of result.stream) {
-                    const chunkText = chunk.text();
-                    textt += chunkText;
-                    setChatHistory((prevChat: any) => {
-                        const lastMessage = prevChat[prevChat.length - 1];
-                        if (lastMessage && lastMessage.role === 'loader') {
-                            return [
-                                ...prevChat.slice(0, prevChat.length - 1),
-                                { role: 'loader', content: lastMessage.content + chunkText },
-                            ];
-                        }
-                        else {
-                            return [
-                                ...prevChat,
-                                { role: 'loader', content: textt },
-                            ];
-                        }
-                    });
-                }
-            }
-            catch{
-                console.log('got an error with the model..')
-            }
+            const result = await chat.sendMessageStream(userQ.content);
 
-
+            // to remove the reaching model loader tag
             setChatHistory((prevChat: any) => {
                 const lastMessage = prevChat[prevChat.length - 1];
-                if (lastMessage && lastMessage.role === 'loader') {
+                if (lastMessage && lastMessage.role === 'reachingModel') {
                     return [
                         ...prevChat.slice(0, prevChat.length - 1),
-                        { role: 'model', content: lastMessage.content },
                     ];
                 }
             });
-            const newEntry = { role: 'model', content: textt };
-            const newList = [...chatHistory, userQ];
-            const newList2 = [...newList, { role: 'model', content: textt }];
-
-            var stringchatHistory = JSON.stringify(newList2)
-            sessionStorage.setItem('chatHistory', stringchatHistory)
-            setLoadingAnswer(false)
-            // console.log('answering...', query, chatHistory, stringchatHistory, sessionStorage.getItem('chatHistory'), '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+            for await (const chunk of result.stream) {
+                const chunkText = chunk.text();
+                textt += chunkText;
+                setChatHistory((prevChat: any) => {
+                    const lastMessage = prevChat[prevChat.length - 1];
+                    if (lastMessage && lastMessage.role === 'loader') {
+                        return [
+                            ...prevChat.slice(0, prevChat.length - 1),
+                            { role: 'loader', content: lastMessage.content + chunkText },
+                        ];
+                    }
+                    else {
+                        return [
+                            ...prevChat,
+                            { role: 'loader', content: textt },
+                        ];
+                    }
+                });
+            }
         }
         catch {
-            setLoadingAnswer(false)
+            console.log('got an error with the model..')
+            setReachingModel(false)
         }
+
+        setChatHistory((prevChat: any) => {
+            const lastMessage = prevChat[prevChat.length - 1];
+            if (lastMessage && lastMessage.role === 'loader') {
+                return [
+                    ...prevChat.slice(0, prevChat.length - 1),
+                    { role: 'model', content: lastMessage.content },
+                ];
+            }
+        });
+        const newEntry = { role: 'model', content: textt };
+        const newList = [...chatHistory, userQ];
+        const newList2 = [...newList, { role: 'model', content: textt }];
+
+        var stringchatHistory = JSON.stringify(newList2)
+        sessionStorage.setItem('chatHistory', stringchatHistory)
+        setLoadingAnswer(false)
+        // console.log('answering...', query, chatHistory, stringchatHistory, sessionStorage.getItem('chatHistory'), '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+
 
     }
     return (
@@ -156,11 +179,11 @@ export default function Chatbot() {
 
                         <div>
                             <Sparkle
-                                className={`${item.role === 'user' ? 'hidden' : " mx-1 w-5 text-green-500"} ${item.role === 'loader' ? ' mx-1 w-5 text-violet-500 animate-spin' : ''} `}
+                                className={`${item.role === 'user' ? 'hidden' : " mx-1 w-5 text-green-500"} ${item.role === 'loader' || item.role==='reachingModel' ? ' mx-1 w-5 text-violet-500 animate-spin' : ''} `}
                             />
                         </div>
 
-                        {item.role !== 'loader1' ? (
+                        {item.role!=='reachingModel' ? (
                             <p
                                 className="rounded-lg text-sm text-white px-4 py-2 bg-blue-500 whitespace-pre-wrap"
                                 style={{
@@ -180,17 +203,17 @@ export default function Chatbot() {
                                     // whiteSpace: 'pre-wrap'
                                 }}
                             >
-                                <div className='flex space-x-2 justify-center items-center'>
-                                    <div className='h-2 w-2 bg-orange-500 rounded-full animate-bounce [animation-delay:-0.2s]'></div>
-                                    <div className='h-2 w-2  bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]'></div>
-                                    <div className='h-2 w-2  bg-blue-500 rounded-full animate-bounce'></div>
-                                </div>
+                                {/* <span className='flex space-x-2 justify-center items-center'>
+                                    <span className='h-2 w-2 bg-orange-500 rounded-full animate-bounce [animation-delay:-0.2s]'></span>
+                                    <span className='h-2 w-2  bg-green-500 rounded-full animate-bounce [animation-delay:-0.15s]'></span>
+                                    <span className='h-2 w-2  bg-blue-500 rounded-full animate-bounce'></span>
+                                </span> */}
                             </p>
                         )}
 
                         <div>
                             <User
-                                className={`${(item.role === 'model' || item.role === 'loader') ? 'hidden' : " mx-1 w-5"} text-red-500`}
+                                className={`${(item.role === 'model' || item.role === 'loader' || item.role==='reachingModel') ? 'hidden' : " mx-1 w-5"} text-red-500`}
                             />
                         </div>
                     </div>
