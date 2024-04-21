@@ -1,13 +1,14 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { BotMessageSquare, User, Dot, Send, SendHorizontal,Sparkles,Sparkle } from 'lucide-react';
+import { BotMessageSquare, User, Dot, Send, SendHorizontal, Sparkles, Sparkle } from 'lucide-react';
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import './scrollbar.css'
 
 export default function Chatbot() {
 
     const [query, setQuery] = useState('')
+    const [loadingAnswer, setLoadingAnswer] = useState(false)
     const [chatHistory, setChatHistory] = useState(() => {
         if (typeof window !== 'undefined' && window.sessionStorage) {
             const storedChatHistory = sessionStorage.getItem('chatHistory');
@@ -73,76 +74,64 @@ export default function Chatbot() {
 
     async function getAnswer() {
         console.log('gettting answer....')
+        try {
+            setLoadingAnswer(true)
+            let userQ = { role: 'user', content: query }
+            setQuery('')
+            setChatHistory((prevChat: any) => [
+                ...prevChat,
+                userQ,
+            ]);
+            let textt = '';
+            try {
+                const result = await chat.sendMessageStream(userQ.content);
+                for await (const chunk of result.stream) {
+                    const chunkText = chunk.text();
+                    textt += chunkText;
+                    setChatHistory((prevChat: any) => {
+                        const lastMessage = prevChat[prevChat.length - 1];
+                        if (lastMessage && lastMessage.role === 'loader') {
+                            return [
+                                ...prevChat.slice(0, prevChat.length - 1),
+                                { role: 'loader', content: lastMessage.content + chunkText },
+                            ];
+                        }
+                        else {
+                            return [
+                                ...prevChat,
+                                { role: 'loader', content: textt },
+                            ];
+                        }
+                    });
+                }
+            }
+            catch{
+                console.log('got an error with the model..')
+            }
 
-        // chatHistory.push({
-        //     'agent': 'loader',
-        //     'value': 'loading...'
-        // })
 
-        let userQ = { role: 'user', content: query }
-        setQuery('')
-        setChatHistory((prevChat: any) => [
-            ...prevChat,
-            userQ,
-        ]);
-
-        // const result = await chat.sendMessage(query);
-        const result = await chat.sendMessageStream(userQ.content);
-
-        let textt = '';
-
-        for await (const chunk of result.stream) {
-            const chunkText = chunk.text();
-            textt += chunkText;
             setChatHistory((prevChat: any) => {
                 const lastMessage = prevChat[prevChat.length - 1];
                 if (lastMessage && lastMessage.role === 'loader') {
                     return [
                         ...prevChat.slice(0, prevChat.length - 1),
-                        { role: 'loader', content: lastMessage.content + chunkText },
-                    ];
-                }
-                else {
-                    return [
-                        ...prevChat,
-                        { role: 'loader', content: textt },
+                        { role: 'model', content: lastMessage.content },
                     ];
                 }
             });
+            const newEntry = { role: 'model', content: textt };
+            const newList = [...chatHistory, userQ];
+            const newList2 = [...newList, { role: 'model', content: textt }];
+
+            var stringchatHistory = JSON.stringify(newList2)
+            sessionStorage.setItem('chatHistory', stringchatHistory)
+            setLoadingAnswer(false)
+            // console.log('answering...', query, chatHistory, stringchatHistory, sessionStorage.getItem('chatHistory'), '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+        }
+        catch {
+            setLoadingAnswer(false)
         }
 
-        setChatHistory((prevChat: any) => {
-            const lastMessage = prevChat[prevChat.length - 1];
-            if (lastMessage && lastMessage.role === 'loader') {
-                return [
-                    ...prevChat.slice(0, prevChat.length - 1),
-                    { role: 'model', content: lastMessage.content },
-                ];
-            }
-        });
-
-        // var answer = 'Hello vishnu. This is Testing bot User Interface.'
-        // chatHistory.pop()
-        // chatHistory.push({
-        //     'agent': 'bot',
-        //     'value': answer
-        // })
-
-        // setChatHistory((prevChat: any) => [
-        //     ...prevChat,
-        //     { role: 'bog', content: query },
-        // ]);
-
-        const newEntry = { role: 'model', content: textt };
-
-        // Create a new list by combining the existing chatHistory with the new entry
-        const newList = [...chatHistory,userQ];
-        const newList2 = [...newList, { role: 'model', content: textt }];
-
-        var stringchatHistory = JSON.stringify(newList2)
-        sessionStorage.setItem('chatHistory', stringchatHistory)
-        // console.log('answering...', query, chatHistory, stringchatHistory, sessionStorage.getItem('chatHistory'), '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-        
     }
     return (
         <div className="bg-white shadow-xl mb-2 rounded-2xl h-[68vh] w-[95vw] lg:w-[60vh] lg:h-[70vh] ">
@@ -154,8 +143,8 @@ export default function Chatbot() {
                     className="w-12 h-12"
                     src='/worldChatLogo.svg' alt='logo'
                 /> */}
-                <Sparkles 
-                className="mr-2 text-white"
+                <Sparkles
+                    className="mr-2 text-white"
                 />
                 <span className="">Sphere <span className=""> Scout</span></span>
             </div>
@@ -167,7 +156,7 @@ export default function Chatbot() {
 
                         <div>
                             <Sparkle
-                                className={`${item.role === 'user' ? 'hidden' : " mx-1 w-5 text-green-500"} ${item.role==='loader'?' mx-1 w-5 text-violet-500 animate-spin':''} `}
+                                className={`${item.role === 'user' ? 'hidden' : " mx-1 w-5 text-green-500"} ${item.role === 'loader' ? ' mx-1 w-5 text-violet-500 animate-spin' : ''} `}
                             />
                         </div>
 
@@ -213,16 +202,12 @@ export default function Chatbot() {
                     className="w-full pr-10 pl-6 text-md placeholder:text-base outline-none shadow-lg placeholder:font-normal rounded-b-2xl resize-none focus:border-none h-full"
                     value={query}
                     onChange={(e) => { setQuery(e.target.value) }}
+                    disabled={loadingAnswer}
                     placeholder="Ask any question related to news"
                     onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey && query.length > 0) {
-                            // var d = {
-                            //     'agent': 'user',
-                            //     'value': (e.target as HTMLInputElement).value
-                            // }
-                            // chatHistory.push(d)
                             getAnswer()
-                            
+
                         }
                     }}
                 />
@@ -231,11 +216,6 @@ export default function Chatbot() {
 
                     onClick={(e) => {
                         if (query.length > 0) {
-                            var d = {
-                                'agent': 'user',
-                                'value': query
-                            }
-                            chatHistory.push(d)
                             getAnswer()
                         }
                     }}
