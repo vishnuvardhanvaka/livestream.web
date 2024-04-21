@@ -316,7 +316,7 @@ export default function Main() {
 
   return (
     <div className="bg-[#f8feff]">
-      <nav className="bg-white sticky top-0 z-20 px-4 border-b-[0.1px] p-2  lg:pt-2 lg:pb-0">
+      <nav className="bg-white sticky top-0 z-50 px-4 border-b-[0.1px] p-2  lg:pt-2 lg:pb-0">
         <div className="flex">
           {/* <div className="inline-flex items-center gap-x-2 text-2xl font-bold">
             <img className="flex w-44" src="/logo.png" alt='infoSphere' />
@@ -384,12 +384,10 @@ export default function Main() {
         <div onClick={(e) => { setOpenMenu(!openMenu) }} className={`absolute right-5 top-1/2 transform  -translate-y-1/2 md:hidden hover:scale-105 cursor-pointer `}>
           {openMenu ? <X size={30} /> : <AlignJustify className="" size={30} />}
         </div>
-
-
       </nav>
 
       {/* {sidebar} */}
-      <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? "z-10 fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
+      <div className={`${darkTheme ? "bg-[#0e0e0e]" : "bg-white"} ${openMenu ? " z-50 fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}>
         <ul className="px-6 flex flex-col">
           {Object.entries(tabItems).map(([key, Component], index) => (
             <div key={index} className="flex flex-col">
@@ -405,7 +403,7 @@ export default function Main() {
         </ul>
       </div>
 
-      <div className="fixed bottom-7 right-7 lg:bottom-10 flex flex-col justify-end items-end z-50">
+      <div className="fixed bottom-7 right-2 lg:right-7 lg:bottom-10 flex flex-col justify-end items-end z-20">
         <div
           className={`${openChatBot ? "scale-100 bottom-10 translate-y-0" : "translate-y-1/2 translate-x-[40%] scale-0"} duration-200`}
         // className={`${openChatBot ? "z-10 fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}
@@ -415,7 +413,7 @@ export default function Main() {
         <div className="" role="button" aria-label="Open Intercom Messenger" aria-live="polite">
           <button
             onClick={(e) => { setOpenChatBot(!openChatBot) }}
-            className={`${openChatBot ? 'hidden' : ''} bg-blue-500 relative lg:hover:scale-110 duration-200 text-white w-[54px] h-[54px] p-3 border-2 rounded-full`}
+            className={`${openChatBot ? 'hidden' : ''} bg-blue-500 relative lg:hover:scale-110 duration-200 text-white w-[54px] h-[54px] p-3 border-2 border-white rounded-full`}
           >
             <svg
               onClick={(e) => { setOpenChatBot(!openChatBot) }}
@@ -429,7 +427,7 @@ export default function Main() {
 
           <ChevronDown
             onClick={(e) => { setOpenChatBot(!openChatBot) }}
-            className={`${openChatBot ? '' : 'hidden'} bg-blue-500 relative lg:hover:scale-110 duration-200 text-white w-[54px] h-[54px] p-2 border-2 rounded-full`}
+            className={`${openChatBot ? '' : 'hidden'} bg-blue-500 relative lg:hover:scale-110 duration-200 text-white w-[54px] h-[54px] p-2 border-2 border-white rounded-full`}
           />
         </div>
       </div>

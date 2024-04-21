@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { BotMessageSquare, User, Dot, Send, SendHorizontal } from 'lucide-react';
+import { BotMessageSquare, User, Dot, Send, SendHorizontal,Sparkles,Sparkle } from 'lucide-react';
+import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import './scrollbar.css'
 
 export default function Chatbot() {
@@ -16,6 +17,8 @@ export default function Chatbot() {
         }
         return [];
     });
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI("AIzaSyCSfDU3ixFHYKc_x36vc0iv-ANBhQ7Hw-g");
 
     const chatContainerRef: any = useRef(null);
     useEffect(() => {
@@ -28,29 +31,122 @@ export default function Chatbot() {
         sessionStorage.setItem('chatHistory', JSON.stringify(chatHistory));
     }, []);
 
+    const safetySettings = [
+        {
+            category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+            threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH,
+        },
+        {
+            category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+            threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+        },
+    ];
+    const model = genAI.getGenerativeModel({ model: "gemini-pro", safetySettings });
+    const chat = model.startChat({
+        history: [
+            {
+                role: "user",
+                parts: [{ text: "Talk in friendly tone only with me." }],
+            },
+            {
+                role: "model",
+                parts: [{ text: "Yes sure. I'm your friend Sphere. I will try my best and help you with all your queries." }],
+            },
+            {
+                role: "user",
+                parts: [{ text: "What is your name?" }],
+            },
+            {
+                role: "model",
+                parts: [{ text: "My name is Scout. Developed by Info Sphere." }],
+            },
+        ],
+        generationConfig: {
+            // stopSequences: ["red"],
+            maxOutputTokens: 1000,
+            temperature: 0.7,
+            topP: 0.1,
+            topK: 16,
+        },
+    });
 
 
     async function getAnswer() {
+        console.log('gettting answer....')
 
-        chatHistory.push({
-            'agent': 'loader',
-            'value': 'loading...'
-        })
+        // chatHistory.push({
+        //     'agent': 'loader',
+        //     'value': 'loading...'
+        // })
 
-        var answer = 'Hello vishnu. This is Testing bot User Interface.'
-        chatHistory.pop()
-        chatHistory.push({
-            'agent': 'bot',
-            'value': answer
-        })
-        var stringchatHistory = JSON.stringify(chatHistory)
-        sessionStorage.setItem('chatHistory', stringchatHistory)
-        console.log('answering...', query, chatHistory)
+        let userQ = { role: 'user', content: query }
         setQuery('')
+        setChatHistory((prevChat: any) => [
+            ...prevChat,
+            userQ,
+        ]);
+
+        // const result = await chat.sendMessage(query);
+        const result = await chat.sendMessageStream(userQ.content);
+
+        let textt = '';
+
+        for await (const chunk of result.stream) {
+            const chunkText = chunk.text();
+            textt += chunkText;
+            setChatHistory((prevChat: any) => {
+                const lastMessage = prevChat[prevChat.length - 1];
+                if (lastMessage && lastMessage.role === 'loader') {
+                    return [
+                        ...prevChat.slice(0, prevChat.length - 1),
+                        { role: 'loader', content: lastMessage.content + chunkText },
+                    ];
+                }
+                else {
+                    return [
+                        ...prevChat,
+                        { role: 'loader', content: textt },
+                    ];
+                }
+            });
+        }
+
+        setChatHistory((prevChat: any) => {
+            const lastMessage = prevChat[prevChat.length - 1];
+            if (lastMessage && lastMessage.role === 'loader') {
+                return [
+                    ...prevChat.slice(0, prevChat.length - 1),
+                    { role: 'model', content: lastMessage.content },
+                ];
+            }
+        });
+
+        // var answer = 'Hello vishnu. This is Testing bot User Interface.'
+        // chatHistory.pop()
+        // chatHistory.push({
+        //     'agent': 'bot',
+        //     'value': answer
+        // })
+
+        // setChatHistory((prevChat: any) => [
+        //     ...prevChat,
+        //     { role: 'bog', content: query },
+        // ]);
+
+        const newEntry = { role: 'model', content: textt };
+
+        // Create a new list by combining the existing chatHistory with the new entry
+        const newList = [...chatHistory,userQ];
+        const newList2 = [...newList, { role: 'model', content: textt }];
+
+        var stringchatHistory = JSON.stringify(newList2)
+        sessionStorage.setItem('chatHistory', stringchatHistory)
+        // console.log('answering...', query, chatHistory, stringchatHistory, sessionStorage.getItem('chatHistory'), '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
+        
     }
     return (
         <div className="bg-white shadow-xl mb-2 rounded-2xl h-[68vh] w-[95vw] lg:w-[60vh] lg:h-[70vh] ">
-            <div className="h-[12%] bg-blue-400 flex justify-start items-center rounded-t-2xl">
+            <div className="h-[12%] bg-blue-400 flex justify-center text-white font-bold text-xl items-center rounded-t-2xl">
                 {/* <BotMessageSquare
                     className="w-12 h-12 mx-5 text-black"
                 /> */}
@@ -58,20 +154,24 @@ export default function Chatbot() {
                     className="w-12 h-12"
                     src='/worldChatLogo.svg' alt='logo'
                 /> */}
+                <Sparkles 
+                className="mr-2 text-white"
+                />
+                <span className="">Sphere <span className=""> Scout</span></span>
             </div>
 
 
             <div id="scrollbar-chat" ref={chatContainerRef} className="h-[78%] overflow-y-auto overflow-x-hidden lg:px-4 py-2">
                 {chatHistory.map((item: any, index: any) => (
-                    <div key={index} className={`${item.agent === 'user' ? 'justify-end ml-auto' : "justify-start"} text-wrap items-end my-4 flex   w-[80%]`}>
+                    <div key={index} className={`${item.role === 'user' ? 'justify-end ml-auto' : "justify-start"} text-wrap items-end my-4 flex   w-[80%]`}>
 
                         <div>
-                            <BotMessageSquare
-                                className={`${item.agent === 'user' ? 'hidden' : " mx-1 w-5"}`}
+                            <Sparkle
+                                className={`${item.role === 'user' ? 'hidden' : " mx-1 w-5 text-green-500"} ${item.role==='loader'?' mx-1 w-5 text-violet-500 animate-spin':''} `}
                             />
                         </div>
 
-                        {item.agent !== 'loader' ? (
+                        {item.role !== 'loader1' ? (
                             <p
                                 className="rounded-lg text-sm text-white px-4 py-2 bg-blue-500 whitespace-pre-wrap"
                                 style={{
@@ -80,7 +180,7 @@ export default function Chatbot() {
                                     // whiteSpace: 'pre-wrap'
                                 }}
                             >
-                                {item.value}
+                                {item.content}
                             </p>
                         ) : (
                             <p
@@ -101,7 +201,7 @@ export default function Chatbot() {
 
                         <div>
                             <User
-                                className={`${(item.agent === 'bot' || item.agent === 'loader') ? 'hidden' : " mx-1 w-5"}`}
+                                className={`${(item.role === 'model' || item.role === 'loader') ? 'hidden' : " mx-1 w-5"} text-red-500`}
                             />
                         </div>
                     </div>
@@ -115,21 +215,22 @@ export default function Chatbot() {
                     onChange={(e) => { setQuery(e.target.value) }}
                     placeholder="Ask any question related to news"
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey && query.length>0) {
-                            var d = {
-                                'agent': 'user',
-                                'value': (e.target as HTMLInputElement).value
-                            }
-                            chatHistory.push(d)
+                        if (e.key === 'Enter' && !e.shiftKey && query.length > 0) {
+                            // var d = {
+                            //     'agent': 'user',
+                            //     'value': (e.target as HTMLInputElement).value
+                            // }
+                            // chatHistory.push(d)
                             getAnswer()
+                            
                         }
                     }}
                 />
                 {/* </textarea> */}
                 <SendHorizontal
-                    
+
                     onClick={(e) => {
-                        if(query.length>0){
+                        if (query.length > 0) {
                             var d = {
                                 'agent': 'user',
                                 'value': query
@@ -138,7 +239,7 @@ export default function Chatbot() {
                             getAnswer()
                         }
                     }}
-                    className={`absolute right-2 w-6  ${query.length>0?'lg:hover:cursor-pointer text-blue-400':'text-gray-300'}`}
+                    className={`absolute right-2 w-6  ${query.length > 0 ? 'lg:hover:cursor-pointer text-blue-400' : 'text-gray-300'}`}
                 />
             </div>
         </div>
