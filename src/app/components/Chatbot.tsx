@@ -4,12 +4,10 @@ import { useState, useEffect, useRef } from "react"
 import { BotMessageSquare, User, Dot, Send, SendHorizontal, Sparkles, Sparkle } from 'lucide-react';
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
 import './scrollbar.css'
-import { Container } from "postcss";
 
 export default function Chatbot() {
 
     const [query, setQuery] = useState('')
-    const [reachingModel, setReachingModel] = useState(false)
     const [loadingAnswer, setLoadingAnswer] = useState(false)
     const [chatHistory, setChatHistory] = useState(() => {
         if (typeof window !== 'undefined' && window.sessionStorage) {
@@ -44,7 +42,10 @@ export default function Chatbot() {
             threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
         },
     ];
-    const model = genAI.getGenerativeModel({ model: "gemini-pro", safetySettings });
+    const system_instruction=[
+        "Don't answer if user asks beyond the news realted questions. Say your are here to help with news updates.",
+    ]
+    const model = genAI.getGenerativeModel({ model: "gemini-pro", safetySettings,system_instruction});
     const chat = model.startChat({
         history: [
             {
@@ -133,8 +134,13 @@ export default function Chatbot() {
         }
         catch {
             console.log('got an error with the model..')
-            setReachingModel(false)
         }
+
+        console.log(chat,chat._history,typeof(chat._history),'&&&&&&&&&&&&&&&&&&&&&&&&&')
+        chat['_history']=[{
+            role: "user",
+            parts: [{ text: "Talk in friendly tone only with me." }],
+        }]
 
         setChatHistory((prevChat: any) => {
             const lastMessage = prevChat[prevChat.length - 1];
@@ -145,7 +151,7 @@ export default function Chatbot() {
                 ];
             }
         });
-        const newEntry = { role: 'model', content: textt };
+        const newEntry = { role: 'model', content: textt};
         const newList = [...chatHistory, userQ];
         const newList2 = [...newList, { role: 'model', content: textt }];
 
@@ -157,7 +163,7 @@ export default function Chatbot() {
 
     }
     return (
-        <div className="bg-white shadow-xl mb-2 rounded-2xl h-[68vh] w-[95vw] lg:w-[60vh] lg:h-[70vh] ">
+        <div className="bg-white shadow-xl mb-2 rounded-2xl h-[68vh] w-[95vw] lg:w-[60vh] lg:h-[70vh]">
             <div className="h-[12%] bg-blue-400 flex justify-center text-white font-bold text-xl items-center rounded-t-2xl">
                 {/* <BotMessageSquare
                     className="w-12 h-12 mx-5 text-black"

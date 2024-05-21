@@ -8,6 +8,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Search, AlignJustify, MessageSquare, ChevronDown, Bus, ChevronRight, Globe, Building2, Cpu, Film, Bike, FlaskConical, HeartPulse, ArrowLeft, X } from 'lucide-react';
 import { setuid } from "process";
 
+import React from 'react'
+import ReactPlayer from 'react-player'
+
 import Chatbot from "./components/Chatbot";
 import './components/scrollbar.css'
 
@@ -15,7 +18,7 @@ export default function Main() {
 
   useEffect(() => {
     setLoadingMarket(true)
-    if (sessionStorage.getItem('weatherDetails') == null || sessionStorage.getItem('weatherDetails')==='{}') {
+    if (sessionStorage.getItem('weatherDetails') == null || sessionStorage.getItem('weatherDetails') === '{}') {
       getWeather()
     } else {
       var weatherDetailsString = sessionStorage.getItem('weatherDetails')
@@ -29,7 +32,7 @@ export default function Main() {
     getGNews(pathname.split('/')[1])
     // getGeoCoordinates()
 
-    if (sessionStorage.getItem('marketDetails') == null || sessionStorage.getItem('marketDetails')==='[]') {
+    if (sessionStorage.getItem('marketDetails') == null || sessionStorage.getItem('marketDetails') === '[]') {
       getMarketDetails()
     }
     else {
@@ -752,8 +755,33 @@ export default function Main() {
             </table>
           </div>
 
+          <div className="my-4">
+            <ReactPlayer
+              playing={true}
+              loop={true}
+              width={500}
+              height={300}
+              className='react-player'
+              // url={`https://apis.elai.io/public/video/65cdbdb04533bfff728207a5.mp4?s=8c1df9019f381bcf7a6027650c8999d035ec087e82a40ff1471ece5cda83ed11`}
+              // url={'https://www.youtube.com/watch?v=wPV9FxeQXxI'}
+              url='https://www.youtube.com/watch?v=nOpLZTh-0Bs'
+              // url={video}
+              config={{
+                youtube: {
+                  playerVars: {
+                    modestbranding: 1
+                  }
+                }
+              }}
+              controls={true}
+            />
+          </div>
+
         </div>
+
+
       </div >
+
 
     </div >
   )
