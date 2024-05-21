@@ -405,9 +405,9 @@ export default function Main() {
         </ul>
       </div>
 
-      <div className="fixed bottom-7 right-2 lg:right-7 lg:bottom-10 flex flex-col justify-end items-end z-20">
+      <div className="fixed bottom-7 right-2 lg:right-7 lg:bottom-10 flex flex-col justify-end items-end">
         <div
-          className={`${openChatBot ? "scale-100 bottom-10 translate-y-0" : "translate-y-1/2 translate-x-[40%] scale-0"} duration-200`}
+          className={`${openChatBot ? "scale-100 bottom-10 translate-y-0" : "translate-y-1/2 translate-x-[40%] hidden scale-0"} duration-200`}
         // className={`${openChatBot ? "z-10 fixed left-0 top-14 h-full w-[85%] shadow-xl ease-in-out duration-500 md:hidden" : "fixed left-[-100%] top-14 w-[80%] border-r h-full border-r-gray-900 bg-white ease-out duration-500"}`}
         >
           <Chatbot />
@@ -479,6 +479,27 @@ export default function Main() {
 
         </div>
       </div>
+
+      <div className="my-4 flex justify-center lg:hidden z-50">
+            <ReactPlayer
+              playing={true}
+              loop={true}
+              width="95%"
+              height="100%"
+              className='react-player w-full'
+              // url={`https://apis.elai.io/public/video/65cdbdb04533bfff728207a5.mp4?s=8c1df9019f381bcf7a6027650c8999d035ec087e82a40ff1471ece5cda83ed11`}
+              // url={'https://www.youtube.com/watch?v=wPV9FxeQXxI'}
+              url='https://www.youtube.com/watch?v=nOpLZTh-0Bs'
+              config={{
+                youtube: {
+                  playerVars: {
+                    modestbranding: 1
+                  }
+                }
+              }}
+              controls={true}
+            />
+          </div>
 
 
       {/* top stories */}
@@ -758,6 +779,7 @@ export default function Main() {
           <div className="my-4">
             <ReactPlayer
               playing={true}
+              
               loop={true}
               width={500}
               height={300}
@@ -774,6 +796,7 @@ export default function Main() {
                 }
               }}
               controls={true}
+              
             />
           </div>
 
