@@ -17,6 +17,7 @@ import './components/scrollbar.css'
 export default function Main() {
 
   useEffect(() => {
+    getVideoUrl()
     setLoadingMarket(true)
     if (sessionStorage.getItem('weatherDetails') == null || sessionStorage.getItem('weatherDetails') === '{}') {
       getWeather()
@@ -74,6 +75,7 @@ export default function Main() {
   const [searchKeyword, setSearchKeyword] = useState('')
   const [openSearch, setOpenSearch] = useState(false)
   const [userLocation, setUserLocation] = useState('')
+  const [videoUrl,setVideoUrl]=useState('')
 
   const [openChatBot, setOpenChatBot] = useState(false)
 
@@ -166,6 +168,24 @@ export default function Main() {
       console.log('Failed to fetch location data');
     }
 
+  }
+
+  async function getVideoUrl(){
+    try {
+      const response = await fetch('https://newsweatherapi.vercel.app/getVideoUrl', {
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setVideoUrl(data.url)
+      console.log(data)
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
   }
 
 
@@ -777,16 +797,19 @@ export default function Main() {
           </div>
 
           <div className="my-4">
-            <ReactPlayer
+            {/* <ReactPlayer
               playing={true}
               
               loop={true}
               width={500}
               height={300}
               className='react-player'
+              
               // url={`https://apis.elai.io/public/video/65cdbdb04533bfff728207a5.mp4?s=8c1df9019f381bcf7a6027650c8999d035ec087e82a40ff1471ece5cda83ed11`}
               // url={'https://www.youtube.com/watch?v=wPV9FxeQXxI'}
-              url='https://www.youtube.com/watch?v=nOpLZTh-0Bs'
+              // url='https://www.youtube.com/watch?v=nOpLZTh-0Bs'
+              // url='https://mu-resource.deepbrain.io/2024-06-21/6675e1fd2bd35c34c6c4bcb9.completed.mp4'
+              url={videoUrl}
               // url={video}
               config={{
                 youtube: {
@@ -796,8 +819,18 @@ export default function Main() {
                 }
               }}
               controls={true}
-              
-            />
+            /> */}
+            <video 
+            className="h-auto w-auto"
+              src={videoUrl} 
+              loop={true}
+              controls={true}
+              autoPlay={true}
+              muted
+              >
+
+            </video>
+
           </div>
 
         </div>
