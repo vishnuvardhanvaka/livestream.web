@@ -501,24 +501,16 @@ export default function Main() {
       </div>
 
       <div className="my-4 flex justify-center lg:hidden z-50">
-            <ReactPlayer
-              playing={true}
+      <video 
+            className=""
+              src={videoUrl} 
               loop={true}
-              width="95%"
-              height="100%"
-              className='react-player w-full'
-              // url={`https://apis.elai.io/public/video/65cdbdb04533bfff728207a5.mp4?s=8c1df9019f381bcf7a6027650c8999d035ec087e82a40ff1471ece5cda83ed11`}
-              // url={'https://www.youtube.com/watch?v=wPV9FxeQXxI'}
-              url='https://www.youtube.com/watch?v=nOpLZTh-0Bs'
-              config={{
-                youtube: {
-                  playerVars: {
-                    modestbranding: 1
-                  }
-                }
-              }}
               controls={true}
-            />
+              autoPlay={true}
+              muted
+              >
+
+            </video>
           </div>
 
 
